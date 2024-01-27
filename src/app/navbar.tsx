@@ -5,7 +5,8 @@ import { Fragment } from "react";
 
 const navigation = [
   { name: "Dashboard", href: "/" },
-  { name: "Playground", href: "/playground" },
+  { name: "Questions", href: "/questions" },
+  { name: "Settings", href: "/settings" },
 ];
 
 function classNames(...classes: string[]) {
@@ -57,7 +58,7 @@ export default function Navbar({ user }: { user: any }) {
                   {navigation.map((item) => (
                     <a
                       key={item.name}
-                      href={item.href}
+                      href={`#${item.href}`}
                       className={classNames(
                         pathname === item.href
                           ? "border-slate-500 text-gray-900"
@@ -147,7 +148,7 @@ export default function Navbar({ user }: { user: any }) {
                 <Disclosure.Button
                   key={item.name}
                   as="a"
-                  href={item.href}
+                  href={`#${item.href}`}
                   className={classNames(
                     pathname === item.href
                       ? "bg-slate-50 border-slate-500 text-slate-700"
