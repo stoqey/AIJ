@@ -1,23 +1,38 @@
+import { isEmpty, uniqBy } from "lodash";
+
 import fs from "fs";
-import { isEmpty } from "lodash";
 import path from "path";
 
 const packageJson = require('../../package.json');
 
 const stateFilename = "state.json";
 const appName = packageJson.name;
-interface State {
-    applied: string[];
+
+export interface AppJob {
+    company: string,
+    title: string,
+    id: string,
+    easyApply: boolean
+};
+
+export interface BEState {
+    jobs: AppJob[];
+    applied: AppJob[];
     questions: any[];
     count: number;
+    isListRunning?: boolean;
+    settings: {
+        key: string;
+        path: string;
+    }
     // TODO: add more states
 };
 
-const initState = { applied: [], questions: [], count: 0 } as State;
+const initState = { applied: [], jobs: [], questions: [], count: 0, isListRunning: false } as BEState;
 
 
 
-function getAppDataPath() {
+export function getAppDataPath() {
     switch (process.platform) {
         case "darwin": {
             return path.join(process.env["HOME"], "Library", "Application Support", appName);
@@ -35,7 +50,7 @@ function getAppDataPath() {
     }
 }
 
-export const getState = async (): Promise<State> => {
+export const getState = async (): Promise<BEState> => {
     try {
         const statePath = getAppDataPath();
         const appDataFilePath = path.join(statePath, stateFilename);
@@ -45,7 +60,7 @@ export const getState = async (): Promise<State> => {
             throw new Error("state is empty");
         }
 
-        return state as State;
+        return state as BEState;
     }
     catch (error) {
         return initState;
@@ -54,7 +69,7 @@ export const getState = async (): Promise<State> => {
 };
 
 
-export async function setState(content: State) {
+export async function setState(content: BEState) {
     try {
         const appDatatDirPath = getAppDataPath();
 
@@ -73,4 +88,20 @@ export async function setState(content: State) {
     catch (error) {
         return false;
     }
+}
+
+export const addApplied = async (job: AppJob) => {
+    const state = await getState();
+    const newApplied = uniqBy([...(state.applied || []), job], "id")
+    const newState = { ...state, applied: newApplied };
+    await setState(newState);
+    return newState;
+};
+
+export const addJob = async (job: AppJob) => {
+    const state = await getState();
+    const newJobs = uniqBy([...(state.jobs || []), job], "id")
+    const newState = { ...state, jobs: newJobs };
+    await setState(newState);
+    return newState;
 }
