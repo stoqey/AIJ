@@ -1,7 +1,7 @@
 {
-  "name": "app-dx-des",
-  "productName": "app-dx-des",
-  "version": "1.0.0",
+  "name": "aij",
+  "productName": "AIJ",
+  "version": "0.0.1",
   "description": "My Electron application description",
   "main": ".webpack/main",
   "scripts": {
@@ -31,24 +31,29 @@
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
     "@vercel/webpack-asset-relocator-loader": "1.7.3",
+    "autoprefixer": "^10.4.17",
     "css-loader": "^6.0.0",
     "electron": "28.2.0",
     "eslint": "^8.0.1",
     "eslint-plugin-import": "^2.25.0",
     "fork-ts-checker-webpack-plugin": "^7.2.13",
     "node-loader": "^2.0.0",
+    "postcss-loader": "^8.0.0",
     "style-loader": "^3.0.0",
     "ts-loader": "^9.2.2",
     "ts-node": "^10.0.0",
     "typescript": "~4.5.4"
   },
   "dependencies": {
+    "@headlessui/tailwindcss": "^0.2.0",
     "axios": "^1.6.7",
     "cheerio": "^1.0.0-rc.12",
     "electron-squirrel-startup": "^1.0.0",
     "lodash": "^4.17.21",
+    "postcss": "^8.4.33",
     "puppeteer": "^21.9.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "tailwindcss": "^3.4.1"
   }
 }

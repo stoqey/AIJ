@@ -55,4 +55,14 @@ export const getAppApi = async (): Promise<any> => {
 
 }
 
+// ui using local file storage
+
+
+// auth,
+
+// questions, 
+// resume sections,
+
+// settings
+
 export default api;
