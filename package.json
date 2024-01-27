@@ -46,6 +46,8 @@
   },
   "dependencies": {
     "@headlessui/tailwindcss": "^0.2.0",
+    "@heroicons/react": "^2.1.1",
+    "@tremor/react": "^3.13.3",
     "axios": "^1.6.7",
     "cheerio": "^1.0.0-rc.12",
     "electron-squirrel-startup": "^1.0.0",
