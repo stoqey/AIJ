@@ -1,4 +1,5 @@
 import React from "react";
+import Settings from "./settings";
 
 const Dashboard = () => {
   return <div>Dashboard</div>;
@@ -6,10 +7,6 @@ const Dashboard = () => {
 
 const Questions = () => {
   return <div>Questions</div>;
-};
-
-const Settings = () => {
-  return <div>Settings</div>;
 };
 
 const NotFound = () => {
@@ -42,5 +39,5 @@ export const Layout = () => {
   const hash = useHashState();
   const route = routes.find((r) => `#/${r.path}` === hash);
   const Component = route ? route.component : NotFound;
-  return <Component />;
+  return <div className="h-full bg-gray-50 p-3 pt-5">{<Component />}</div>;
 };
