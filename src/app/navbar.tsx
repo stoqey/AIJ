@@ -6,6 +6,7 @@ import { Fragment } from "react";
 const navigation = [
   { name: "Dashboard", href: "/" },
   { name: "Questions", href: "/questions" },
+  { name: "Resume", href: "/resume" },
   { name: "Settings", href: "/settings" },
 ];
 

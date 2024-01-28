@@ -14,18 +14,19 @@ import {
   Textarea,
   Title,
 } from "@tremor/react";
-import {
-  ClockIcon,
-  CogIcon,
-  MinusCircleIcon,
-  ShoppingCartIcon,
-  StatusOnlineIcon,
-} from "@heroicons/react/outline";
 
 import React from "react";
 import _get from "lodash/get";
 import { questionSamples } from "./list.sample";
 import { uniq } from "lodash";
+// import {
+//   ClockIcon,
+//   CogIcon,
+//   MinusCircleIcon,
+//   ShoppingCartIcon,
+//   StatusOnlineIcon,
+// } from "@heroicons/react/outline";
+
 
 const cities = [
   {

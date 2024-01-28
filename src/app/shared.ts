@@ -7,6 +7,7 @@ export interface State {
     questions: any[];
     count: number;
     isListRunning?: boolean;
+    isAppRunning?: boolean;
     settings: ISettings;
     // TODO: add more states
 };

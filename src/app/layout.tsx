@@ -2,6 +2,7 @@ import Dashboard from "./dashboard";
 import Navbar from "./navbar";
 import Questions from "./questions";
 import React from "react";
+import Resume from "./resume";
 import Settings from "./settings";
 
 const NotFound = () => {
@@ -12,6 +13,7 @@ const routes = [
   { path: "", component: Dashboard },
   { path: "questions", component: Questions },
   { path: "settings", component: Settings },
+  { path: "resume", component: Resume },
   { path: "*", component: NotFound },
 ];
 
@@ -37,7 +39,7 @@ export const Layout = () => {
   return (
     <div className="h-full bg-gray-50 w-full">
       <Navbar user={null} />
-      <div className="p-3" style={{ paddingTop: "50px"}}>
+      <div className="p-3" style={{ paddingTop: "50px" }}>
         <Component />
       </div>
     </div>
