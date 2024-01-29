@@ -1,35 +1,17 @@
-import { Question, QuestionAnswer } from "../app/questions/interfaces";
+import { AppJob, BEState } from "./state.interfaces";
+import { Question, QuestionAnswer } from "../../app/questions/interfaces";
 import { isEmpty, uniqBy } from "lodash";
 
 import fs from "fs";
+import packageJson from '../../../package.json';
 import path from "path";
 
-const packageJson = require('../../package.json');
+export * from "./state.interfaces";
+
+
 
 const stateFilename = "state.json";
 const appName = packageJson.name;
-
-export interface AppJob {
-    company: string,
-    title: string,
-    id: string,
-    easyApply: boolean
-};
-
-export interface BEState {
-    jobs: AppJob[];
-    activeJob: AppJob;
-    applied: AppJob[];
-    questions: any[];
-    count: number;
-    isListRunning?: boolean;
-    isAppRunning?: boolean;
-    settings: {
-        key: string;
-        path: string;
-    }
-    // TODO: add more states
-};
 
 const initState = { applied: [], jobs: [], questions: [], count: 0, isListRunning: false } as BEState;
 
@@ -127,7 +109,7 @@ function getReadableId(question: string) {
 
 // QUESTIONS
 // get one question
-export function getQuestion(question: Question): QuestionAnswer | null {
+export async function getQuestion(question: Question): Promise<QuestionAnswer | null> {
     try {
         const appDataDirPath = getAppDataPath();
         const cachePath = path.join(appDataDirPath, "questions");
@@ -142,7 +124,7 @@ export function getQuestion(question: Question): QuestionAnswer | null {
 };
 
 // get questions
-export function getAllQuestion(): QuestionAnswer[] {
+export async function getAllQuestion(): Promise<QuestionAnswer[]> {
     try {
         const appDataDirPath = getAppDataPath();
         const questionDirPath = path.join(appDataDirPath, "questions");
@@ -163,7 +145,7 @@ export function getAllQuestion(): QuestionAnswer[] {
     }
 };
 
-export function saveQuestion(questionAnswer: QuestionAnswer): boolean {
+export async function saveQuestion(questionAnswer: QuestionAnswer): Promise<boolean> {
     try {
         const appDataDirPath = getAppDataPath();
         const questionDirPath = path.join(appDataDirPath, "questions");
@@ -171,10 +153,10 @@ export function saveQuestion(questionAnswer: QuestionAnswer): boolean {
         const questionFile = `${getReadableId(questionAnswer.question.question)}.json`;
         // Create appDataDir if not exist
         if (!fs.existsSync(questionDirPath)) {
-            fs.mkdirSync(questionDirPath);
+            fs.mkdirSync(questionDirPath, { recursive: true });
         }
 
-        const questionFilDestination = path.join(appDataDirPath, questionFile);
+        const questionFilDestination = path.join(questionDirPath, questionFile);
         const state = JSON.stringify(questionAnswer, null, 2);
 
         fs.writeFileSync(questionFilDestination, state);
@@ -185,6 +167,21 @@ export function saveQuestion(questionAnswer: QuestionAnswer): boolean {
     }
 };
 
+export async function readQuestion(question: QuestionAnswer): Promise<boolean> {
+    try {
+        const isNew = question.isNew;
+        if (!isNew) {
+            return false;
+        };
+
+        return await saveQuestion({
+            ...question, isNew: false
+        })
+    }
+    catch (error) {
+        return false;
+    }
+}
 
 // save resume text to file
 // load resume text from file

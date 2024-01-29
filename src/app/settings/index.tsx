@@ -1,8 +1,9 @@
 import { Button, Card, TextInput } from "@tremor/react";
 
+import { LayoutPageProps } from "../layout";
 import React from "react";
 
-export const SettingsPage = () => {
+export const SettingsPage = ({ state }: LayoutPageProps) => {
   return (
     <Card>
       <div className="p-2">

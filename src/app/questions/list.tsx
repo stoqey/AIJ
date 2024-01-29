@@ -14,46 +14,17 @@ import {
   Textarea,
   Title,
 } from "@tremor/react";
+import {
+  ClockIcon,
+  CogIcon,
+  MagnifyingGlassIcon,
+  MinusCircleIcon,
+  ShoppingCartIcon,
+} from "@heroicons/react/20/solid";
+import { isEmpty, sortBy, uniq, uniqBy } from "lodash";
 
 import React from "react";
 import _get from "lodash/get";
-import { questionSamples } from "./list.sample";
-import { uniq } from "lodash";
-
-// import {
-//   ClockIcon,
-//   CogIcon,
-//   MinusCircleIcon,
-//   ShoppingCartIcon,
-//   StatusOnlineIcon,
-// } from "@heroicons/react/outline";
-
-const cities = [
-  {
-    city: "Athens",
-    rating: "2 open PR",
-  },
-  {
-    city: "Luzern",
-    rating: "1 open PR",
-  },
-  {
-    city: "Zürich",
-    rating: "0 open PR",
-  },
-  {
-    city: "Vienna",
-    rating: "1 open PR",
-  },
-  {
-    city: "Ermatingen",
-    rating: "0 open PR",
-  },
-  {
-    city: "Lisbon",
-    rating: "0 open PR",
-  },
-];
 
 interface ICheckbox {
   title: string;
@@ -161,9 +132,77 @@ const RenderQuestion = ({
       );
   }
 };
+
+interface ListQuestionsProps {}
+interface ListQuestionsState {
+  selectedQuestion: QuestionAnswer | null;
+  questions: QuestionAnswer[];
+  search: string;
+}
+
 export const ListQuestions = () => {
-  const [selectedQuestion, setSelectedQuestion] =
-    React.useState<QuestionAnswer | null>(null);
+  const [state, setState] = React.useState<ListQuestionsState>({
+    selectedQuestion: null,
+    questions: [],
+    search: "",
+  });
+
+  const { selectedQuestion = null, questions = [], search } = state;
+
+  const handleSearch = (search: string) => {
+    setState({ ...state, search });
+  };
+
+  const clearSearch = () => {
+    setState({ ...state, search: "" });
+  };
+
+  const getFilteredQuestions = () => {
+    let filteredQuestions = questions.filter(
+      (item) =>
+        item &&
+        item.question &&
+        item.question.question.toLowerCase().includes(search.toLowerCase())
+    );
+
+    filteredQuestions = sortBy(filteredQuestions, "isNew");
+    return sortBy(filteredQuestions, "date");
+  };
+
+  const readQuestion = async (question: QuestionAnswer) => {
+    if (question.isNew) {
+      //   update BE
+
+      const savedRead = await (window as any).api.invoke(
+        "questions:read",
+        question
+      );
+
+      console.log("savedRead", savedRead);
+
+      if (savedRead) {
+        // update FE
+        const allquestions = questions.map((item) => {
+          if (item.question.inputId === question.question.inputId) {
+            return { ...question, isNew: false };
+          }
+          return item;
+        });
+
+        setState({
+          ...state,
+          questions: allquestions,
+          selectedQuestion: question,
+        });
+      }
+    } else {
+      setState({ ...state, selectedQuestion: question });
+    }
+  };
+
+  const setSelectedQuestion = async (question: QuestionAnswer) => {
+    await readQuestion(question);
+  };
 
   const setSelectedAnswerText = (answer: string) => {
     const selQuestion = { ...selectedQuestion, chainRes: { text: answer } };
@@ -210,42 +249,105 @@ export const ListQuestions = () => {
     }
   };
 
-  const handleSaveQuestion = () => {
-    console.log("save question");
-    
-  }
+  const getAllQuestions = async () => {
+    let questionsApi = await (window as any).api.invoke("questions:getall");
+    if (questionsApi) {
+      questionsApi = questionsApi.filter(
+        (item: QuestionAnswer) => item && item.question && item.question.inputId
+      );
+
+      questionsApi = uniqBy(questionsApi, "question.inputId");
+
+      if (questionsApi.length) {
+        setState({ ...state, questions: questionsApi });
+      }
+    }
+
+    return questionsApi;
+  };
+
+  React.useEffect(() => {
+    getAllQuestions();
+  }, [search]);
+
+  const handleSaveQuestion = async () => {
+    const saveQuestion = await (window as any).api.invoke(
+      "questions:save",
+      selectedQuestion
+    );
+    if (saveQuestion) {
+      console.log("saveQuestion", saveQuestion);
+    }
+
+    const allquestions = questions.map((item) => {
+      if (item.question.inputId === selectedQuestion.question.inputId) {
+        return selectedQuestion;
+      }
+      return item;
+    });
+
+    setState({ ...state, questions: allquestions });
+
+    // await getAllQuestions();
+    return saveQuestion;
+  };
+
+  const filteredQuestions = getFilteredQuestions();
 
   return (
     <Card className="max-w-xl">
-      <Bold>Questions</Bold>
-
       <div>
+        <Title>Questions {questions.length}</Title>
         <Grid numItems={1} numItemsSm={2} numItemsLg={3} className="gap-3">
-          <Flex className="border border-solid">
+          <Col className="border border-solid">
+            <div className="flex rounded-md shadow-sm mb-2 relative">
+              <input
+                value={search}
+                name="search"
+                id="search"
+                //   disabled={disabled}
+                className="h-10 block w-full rounded-md border border-gray-200 pl-9 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                placeholder=" Search by name..."
+                spellCheck={false}
+                onChange={(e) => handleSearch(e.target.value)}
+              />
+
+              {!isEmpty(search) && (
+                <div
+                  className="absolute right-1 top-0 bottom-0 flex items-center justify-center cursor-pointer"
+                  onClick={() => clearSearch()}
+                >
+                  <MinusCircleIcon className="h-5 w-5 text-gray-400" />
+                </div>
+              )}
+            </div>
+
             <List
               style={{
-                height: "90vh",
+                height: "80vh",
                 overflowY: "scroll",
               }}
             >
-              {questionSamples.map((item) => (
+              {filteredQuestions.map((item) => (
                 <ListItem
                   onClick={() => setSelectedQuestion(item as QuestionAnswer)}
-                  key={item.question.question}
+                  key={item.question.inputId}
                   className=" hover:bg-gray-100 cursor-pointer px-2"
                 >
-                  <Text>{item.question.question}</Text>
-                  <Text>
-                    <Badge>Some text</Badge>{" "}
-                  </Text>
+                  <p className="truncate">{item.question.question}</p>
+                  {item.isNew && (
+                    <Text>
+                      <Badge>New</Badge>{" "}
+                    </Text>
+                  )}
                 </ListItem>
               ))}
             </List>
-          </Flex>
+          </Col>
 
           {selectedQuestion && (
             <Col numColSpan={1} numColSpanLg={2}>
-              <Card>
+              <div>
                 <div className="m-1">
                   <Metric>{selectedQuestion.question.question}</Metric>
                 </div>
@@ -256,11 +358,14 @@ export const ListQuestions = () => {
                 />
 
                 <div className="flex justify-center mt-2">
-                  <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                  <button
+                    onClick={handleSaveQuestion}
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                  >
                     Save
                   </button>
                 </div>
-              </Card>
+              </div>
             </Col>
           )}
 

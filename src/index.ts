@@ -1,5 +1,5 @@
 import { APPEVENTS, AppEvents } from './events';
-import { AppJob, BEState, addApplied, getAllQuestion, getResume, getState, saveQuestion, saveResume, setState } from "./utils/state";
+import { AppJob, BEState, addApplied, getAllQuestion, getResume, getState, readQuestion, saveQuestion, saveResume, setState } from "./utils/state";
 import { BrowserWindow, app, dialog, ipcMain, shell } from 'electron';
 import { gotoAppPage, gotoMainPage } from './config/app';
 
@@ -148,7 +148,7 @@ async function runApplying(): Promise<any> {
     cantRun = !!activeJob || !state.isAppRunning;
 
     if (cantRun) {
-      console.log("activeJob", {activeJob, isAppRunning: state.isAppRunning});
+      console.log("activeJob", { activeJob, isAppRunning: state.isAppRunning });
       return null;
     }
 
@@ -201,6 +201,12 @@ ipcMain.handle('state', async (event) => {
   return state;
 });
 
+ipcMain.handle('questions:read', async (event, question) => {
+  console.log("questions:read", question);
+  const savedQuestion = await readQuestion(question as any);
+  return savedQuestion;
+});
+
 
 ipcMain.handle('questions:getall', async (event) => {
   const questions = await getAllQuestion();
@@ -208,6 +214,7 @@ ipcMain.handle('questions:getall', async (event) => {
 });
 
 ipcMain.handle('questions:save', async (event, question) => {
+  console.log("questions:save", question);
   const savedQuestion = await saveQuestion(question as any);
   return savedQuestion;
 });

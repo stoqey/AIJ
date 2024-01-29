@@ -9,11 +9,11 @@ import {
   Text,
 } from "@tremor/react";
 
+import { LayoutPageProps } from "../layout";
 import React from "react";
 import { useAppState } from "../hooks";
 
-export const Dashboard = () => {
-  const state = useAppState();
+export const Dashboard = ({ state }: LayoutPageProps) => {
   const {
     isListRunning,
     isAppRunning,

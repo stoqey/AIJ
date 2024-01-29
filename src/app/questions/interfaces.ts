@@ -25,4 +25,6 @@ export interface QuestionAnswer {
         text: string;
         [key: string]: any;
     }
+    isNew?: boolean;
+    date?: Date;
 }

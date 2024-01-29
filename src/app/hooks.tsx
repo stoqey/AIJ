@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 
 import { BEState } from "../utils/state";
-import { State } from "./shared";
 
 export const useAppState = (): BEState => {
   const [state, setState] = React.useState<BEState>({
