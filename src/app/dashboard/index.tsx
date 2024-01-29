@@ -14,63 +14,111 @@ import { useAppState } from "../hooks";
 
 export const Dashboard = () => {
   const state = useAppState();
-  const { isListRunning, isAppRunning } = state;
+  const {
+    isListRunning,
+    isAppRunning,
+    jobs = [],
+    applied = [],
+    questions = [],
+  } = state;
 
-  const toggleStartStop = async (eventName: string) => {
-    const startStop = `${eventName}:${isListRunning ? "stop" : "start"}`;
-    await (window as any).api.invoke(startStop, null);
+  const invokeEvent = async (eventName: string, args?: any) => {
+    await (window as any).api.invoke(eventName, args);
   };
 
+  const searchUrl = "https://ca.indeed.com/jobs?q=nodejs";
+
   const allEvents = [
-    { title: "Main", name: "list", isRunning: isListRunning },
-    { title: "App", name: "app", isRunning: isAppRunning },
+    // { title: "Main", name: "list", isRunning: isListRunning, args: searchUrl },
+    {
+      title: "Applications",
+      name: "app",
+      isRunning: isAppRunning,
+      applications: applied,
+    },
   ];
 
   return (
-    <Grid numItems={1} numItemsSm={2} numItemsLg={2} className="gap-3">
-      {allEvents.map(({ isRunning, name: eventName, title }) => {
-        return (
-          <Card key={eventName}>
-            <div className="flex items-center">
-              <Metric>{title}</Metric>
-              <div className="p-3">
-                <Bold> some nice number </Bold>
-              </div>
+    <Card>
+      <Grid numItems={1} numItemsSm={2} numItemsLg={2} className="gap-3">
+        <div>
+          <div className="flex items-center">
+            <Metric>Jobs</Metric>
+            <div className="p-3">
+              <Bold> {jobs.length} </Bold>
             </div>
+          </div>
 
-            <div className="flex justify-center">
-              <Button
-                onClick={() => toggleStartStop(eventName)}
-                disabled={isRunning}
-                loading={isRunning}
-              >
-                {" "}
-                {!isListRunning ? "Run" : "Running"}{" "}
-              </Button>
+          <div className="rounded-md shadow-sm mb-2">
+            <input
+              defaultValue={searchUrl}
+              name="search"
+              id="search"
+              //   disabled={disabled}
+              className="h-10 block w-full rounded-md border border-gray-200 pl-9 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              placeholder="Search by name..."
+              spellCheck={false}
+              // onChange={(e) => handleSearch(e.target.value)}
+            />
+          </div>
 
-              <div className="ml-2">
-                {isListRunning && (
-                  <Button
-                    color="red"
-                    onClick={() => toggleStartStop(eventName)}
-                  >
-                    {" "}
-                    Stop{" "}
-                  </Button>
-                )}
-              </div>
+          <div className="flex justify-center">
+            <Button
+              onClick={() => invokeEvent("list:start", searchUrl)}
+              disabled={isListRunning}
+              loading={isListRunning}
+            >
+              {" "}
+              {!isListRunning ? "Run" : "Running"}{" "}
+            </Button>
+
+            <div className="ml-2">
+              {isListRunning && (
+                <Button
+                  color="red"
+                  onClick={() => invokeEvent("list:stop", searchUrl)}
+                >
+                  {" "}
+                  Stop{" "}
+                </Button>
+              )}
             </div>
-          </Card>
-        );
-      })}
+          </div>
+        </div>
 
-      {/* Analytics */}
-      {/* <Col numColSpan={3}>
-        <Card>
-          <Text>Title</Text>
-        </Card>
-      </Col> */}
-    </Grid>
+        <div>
+          <div className="flex items-center">
+            <Metric>Applications</Metric>
+            <div className="p-3">
+              <Bold> {applied.length} </Bold>
+            </div>
+          </div>
+
+          <div className="flex justify-center">
+            <Button
+              onClick={() => invokeEvent("app:start", searchUrl)}
+              disabled={isAppRunning}
+              loading={isAppRunning}
+            >
+              {" "}
+              {!isAppRunning ? "Run" : "Running"}{" "}
+            </Button>
+
+            <div className="ml-2">
+              {isAppRunning && (
+                <Button
+                  color="red"
+                  onClick={() => invokeEvent("app:stop", searchUrl)}
+                >
+                  {" "}
+                  Stop{" "}
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      </Grid>
+    </Card>
   );
 };
 

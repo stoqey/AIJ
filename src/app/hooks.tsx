@@ -1,9 +1,16 @@
 import React, { useEffect } from "react";
 
+import { BEState } from "../utils/state";
 import { State } from "./shared";
 
-export const useAppState = (): State => {
-  const [state, setState] = React.useState({ count: 0 });
+export const useAppState = (): BEState => {
+  const [state, setState] = React.useState<BEState>({
+    count: 0,
+    jobs: [],
+    applied: [],
+    questions: [],
+    settings: { key: "", path: "" },
+  });
 
   const getState = async () => {
     const appstate = await (window as any).api.invoke("state");
@@ -22,5 +29,5 @@ export const useAppState = (): State => {
     return () => clearInterval(intervalId);
   }, []); // Empty dependency array means this effect runs once on mount and cleanup on unmount
 
-  return state as State;
+  return state as BEState;
 };

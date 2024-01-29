@@ -1,6 +1,6 @@
+import { Question, QuestionAnswer } from "../app/questions/interfaces";
 import { isEmpty, uniqBy } from "lodash";
 
-import { Question } from "../app/questions/interfaces";
 import fs from "fs";
 import path from "path";
 
@@ -22,6 +22,7 @@ export interface BEState {
     questions: any[];
     count: number;
     isListRunning?: boolean;
+    isAppRunning?: boolean;
     settings: {
         key: string;
         path: string;
@@ -99,12 +100,21 @@ export const addApplied = async (job: AppJob) => {
     return newState;
 };
 
-export const addJob = async (job: AppJob) => {
-    const state = await getState();
-    const newJobs = uniqBy([...(state.jobs || []), job], "id")
-    const newState = { ...state, jobs: newJobs };
-    await setState(newState);
-    return newState;
+export const addJob = async (job: AppJob | AppJob[]): Promise<boolean> => {
+
+    try {
+        const state = await getState();
+        const newJobs = uniqBy([...(state.jobs || []), ...(Array.isArray(job) ? job : [job])], "id")
+        const newState = { ...state, jobs: newJobs };
+        await setState(newState);
+        return true;
+
+    }
+    catch (error) {
+        console.error("error addJob", error);
+        return false;
+    }
+
 };
 
 
@@ -114,9 +124,23 @@ function getReadableId(question: string) {
 
 
 // QUESTIONS
+// get one question
+export function getQuestion(question: Question): QuestionAnswer | null {
+    try {
+        const appDataDirPath = getAppDataPath();
+        const cachePath = path.join(appDataDirPath, "questions");
+        const questionReadableId = getReadableId(question.question)
+        const cacheDataString = fs.readFileSync(`${cachePath}/${questionReadableId}.json`);
+        const cacheData = JSON.parse(cacheDataString.toString());
+        return cacheData as { question: Question; chainRes: any; }
+    }
+    catch (error) {
+        return null;
+    }
+};
 
 // get questions
-export function getAllQuestion(): Question[] {
+export function getAllQuestion(): QuestionAnswer[] {
     try {
         const appDataDirPath = getAppDataPath();
         const questionDirPath = path.join(appDataDirPath, "questions");
@@ -127,7 +151,7 @@ export function getAllQuestion(): Question[] {
             const questionFile = path.join(questionDirPath, file);
             const questionDataString = fs.readFileSync(questionFile);
             const questionData = JSON.parse(questionDataString.toString());
-            return questionData as Question;
+            return questionData as QuestionAnswer;
         });
 
         return questions;
@@ -137,18 +161,19 @@ export function getAllQuestion(): Question[] {
     }
 };
 
-export function saveQuestion(question: Question): boolean {
+export function saveQuestion(questionAnswer: QuestionAnswer): boolean {
     try {
         const appDataDirPath = getAppDataPath();
         const questionDirPath = path.join(appDataDirPath, "questions");
-        const questionFile = `${getReadableId(question.question)}.json`;
+
+        const questionFile = `${getReadableId(questionAnswer.question.question)}.json`;
         // Create appDataDir if not exist
         if (!fs.existsSync(questionDirPath)) {
             fs.mkdirSync(questionDirPath);
         }
 
         const questionFilDestination = path.join(appDataDirPath, questionFile);
-        const state = JSON.stringify(question, null, 2);
+        const state = JSON.stringify(questionAnswer, null, 2);
 
         fs.writeFileSync(questionFilDestination, state);
         return true;

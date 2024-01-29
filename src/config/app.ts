@@ -1,11 +1,12 @@
 import * as cheerio from "cheerio";
 
 import { APPEVENTS, AppEvents } from "../events";
+import { AppJob, addJob, getQuestion, getState, saveQuestion, setState } from "../utils/state";
 import _, { debounce } from "lodash";
 import { getAppApi, getMainApi } from "../api";
 
 import _get from "lodash/get";
-import { addJob } from "../utils/state";
+import axios from "axios";
 import { getBrowser } from "./browser";
 
 const appEvents = AppEvents.Instance;
@@ -33,8 +34,6 @@ export const gotoMainPage = async (url: string) => {
 
         const mainFunc = getMain.data;
 
-        console.log("mainFunc", mainFunc);
-
         return await new Promise((resolve, reject) => {
 
 
@@ -54,20 +53,30 @@ export const gotoMainPage = async (url: string) => {
 }
 
 
-export const gotoAppPage = async (url: string) => {
+export const gotoAppPage = async (job: AppJob) => {
     try {
 
         const browser = await getBrowser();
         const page = await browser.newPage();
+
+        const close = () => {
+            appEvents.emit(APPEVENTS.APP_STOP, job.id);
+        };
 
         const ctx = {
             cheerio,
             _,
             browser,
             page,
-            url,
+            job,
             debounce,
             addJob,
+            axios,
+            getQuestion,
+            saveQuestion,
+            setState,
+            getState,
+            close,
         };
 
         const getAppRes = await getAppApi();
@@ -77,14 +86,15 @@ export const gotoAppPage = async (url: string) => {
 
         const mainFunc = getAppRes.data;
 
-        console.log("getAppApi", mainFunc);
-
         return await new Promise((resolve, reject) => {
 
-            appEvents.on(APPEVENTS.APP_STOP, () => {
-                console.log("app stop");
-                page.close();
-                resolve(true);
+            appEvents.on(APPEVENTS.APP_STOP, (jobId: string) => {
+                console.log("app stop", jobId);
+
+                if (jobId === job.id) {
+                    page.close();
+                    resolve(true);
+                }
             });
             const funcFunc = new Function(mainFunc);
             funcFunc.call(null).call(null, ctx, resolve, reject);
@@ -95,4 +105,3 @@ export const gotoAppPage = async (url: string) => {
         console.error("Error gotoAppPage", error);
     }
 }
-

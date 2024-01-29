@@ -4,6 +4,7 @@ import Questions from "./questions";
 import React from "react";
 import Resume from "./resume";
 import Settings from "./settings";
+import { isEmpty } from "lodash";
 
 const NotFound = () => {
   return <div>Not Found</div>;
@@ -34,8 +35,13 @@ export const useHashState = () => {
 
 export const Layout = () => {
   const hash = useHashState();
+  const isMain = isEmpty(hash);
   const route = routes.find((r) => `#/${r.path}` === hash);
-  const Component = route ? route.component : NotFound;
+  const Component = isMain
+    ? routes[0].component
+    : route
+    ? route.component
+    : NotFound;
   return (
     <div className="h-full bg-gray-50 w-full">
       <Navbar user={null} />

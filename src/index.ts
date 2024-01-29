@@ -1,8 +1,8 @@
 import { APPEVENTS, AppEvents } from './events';
 import { BrowserWindow, app, dialog, ipcMain, shell } from 'electron';
 import { getAllQuestion, getResume, getState, saveQuestion, saveResume, setState } from "./utils/state";
+import { gotoAppPage, gotoMainPage } from './config/app';
 
-import { gotoMainPage } from './config/app';
 import packageJson from '../package.json';
 import path from 'node:path';
 
@@ -111,8 +111,7 @@ const setListStartStop = async (isStart: boolean) => {
   return newState;
 }
 
-ipcMain.handle('list:start', async (event, ...args) => {
-  const url = "https://ca.indeed.com/jobs?q=nodejs";
+ipcMain.handle('list:start', async (event, url) => {
   await setListStartStop(true);
   await gotoMainPage(url);
   return true;
@@ -124,14 +123,55 @@ ipcMain.handle('list:stop', async (event) => {
   return true;
 });
 
+const setAppStartStop = async (isStart: boolean) => {
+  const state = await getState();
+  const newState = { ...state, isAppRunning: isStart };
+  await setState(newState);
+  return newState;
+}
+
+const startApplying = async (): Promise<any> => {
+  try {
+    const state = await getState();
+    const { jobs, isAppRunning } = state;
+
+    // if (isAppRunning) { console.log("app is already running"); return null };
+
+    console.log("startApplying", jobs.length);
+
+    for (const job of jobs) {
+      if (job.id) {
+        await gotoAppPage(job);
+        await new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve(true);
+          }, 10000);
+        });
+      }
+
+    }
+
+  }
+  catch (error) {
+    console.error("Error startApplying", error);
+    return null;
+  }
+}
+
+
 ipcMain.handle('app:start', async (event) => {
+  console.log("app:start");
+  await setAppStartStop(true);
+  await startApplying();
   return true;
 });
 
 ipcMain.handle('app:stop', async (event) => {
+  console.log("app:stop");
+  await setAppStartStop(false);
+  appEvents.emit(APPEVENTS.APP_STOP);
   return true;
 });
-
 
 ipcMain.handle('state', async (event) => {
   const state = await getState();
