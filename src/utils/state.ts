@@ -18,6 +18,7 @@ export interface AppJob {
 
 export interface BEState {
     jobs: AppJob[];
+    activeJob: AppJob;
     applied: AppJob[];
     questions: any[];
     count: number;
@@ -94,8 +95,9 @@ export async function setState(content: BEState) {
 
 export const addApplied = async (job: AppJob) => {
     const state = await getState();
+    const newJobs = (state.jobs || []).filter((j) => j.id !== job.id);
     const newApplied = uniqBy([...(state.applied || []), job], "id")
-    const newState = { ...state, applied: newApplied };
+    const newState: BEState = { ...state, applied: newApplied, jobs: newJobs, activeJob: null };
     await setState(newState);
     return newState;
 };

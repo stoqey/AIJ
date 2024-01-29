@@ -10,6 +10,7 @@ export const useAppState = (): BEState => {
     applied: [],
     questions: [],
     settings: { key: "", path: "" },
+    activeJob: null,
   });
 
   const getState = async () => {

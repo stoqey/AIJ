@@ -1,6 +1,6 @@
 import { APPEVENTS, AppEvents } from './events';
+import { AppJob, BEState, addApplied, getAllQuestion, getResume, getState, saveQuestion, saveResume, setState } from "./utils/state";
 import { BrowserWindow, app, dialog, ipcMain, shell } from 'electron';
-import { getAllQuestion, getResume, getState, saveQuestion, saveResume, setState } from "./utils/state";
 import { gotoAppPage, gotoMainPage } from './config/app';
 
 import packageJson from '../package.json';
@@ -125,44 +125,67 @@ ipcMain.handle('list:stop', async (event) => {
 
 const setAppStartStop = async (isStart: boolean) => {
   const state = await getState();
-  const newState = { ...state, isAppRunning: isStart };
+  const newState: BEState = { ...state, isAppRunning: isStart, activeJob: null };
   await setState(newState);
   return newState;
 }
 
-const startApplying = async (): Promise<any> => {
-  try {
-    const state = await getState();
-    const { jobs, isAppRunning } = state;
+appEvents.on(APPEVENTS.APP_START, async (job: AppJob) => {
+  console.log("appEvents.on(APPEVENTS.APP_STOP", job);
+  await runApplying();
+});
 
-    // if (isAppRunning) { console.log("app is already running"); return null };
+async function runApplying(): Promise<any> {
+  let jobs: AppJob[] = [];
+  let state: any = {};
+  let activeJob: AppJob = null;
+  let cantRun = false;
+  try {
+    state = await getState();
+    jobs = state.jobs;
+    activeJob = state.activeJob;
+
+    cantRun = !!activeJob || !state.isAppRunning;
+
+    if (cantRun) {
+      console.log("activeJob", {activeJob, isAppRunning: state.isAppRunning});
+      return null;
+    }
 
     console.log("startApplying", jobs.length);
+    const firstJob = jobs[0];
 
-    for (const job of jobs) {
-      if (job.id) {
-        await gotoAppPage(job);
-        await new Promise((resolve, reject) => {
-          setTimeout(() => {
-            resolve(true);
-          }, 10000);
-        });
-      }
-
+    if (firstJob) {
+      await setState({ ...state, activeJob: firstJob });
+      await gotoAppPage(firstJob);
+      await new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve(true);
+        }, 1000);
+      });
     }
 
   }
   catch (error) {
     console.error("Error startApplying", error);
     return null;
+
+  } finally {
+    const state = await getState();
+    // get next job
+    const nextJob = state.jobs[1];
+    if (nextJob && !cantRun) {
+      console.log("nextJob", nextJob);
+      appEvents.emit(APPEVENTS.APP_START, null);
+    }
+
   }
 }
-
 
 ipcMain.handle('app:start', async (event) => {
   console.log("app:start");
   await setAppStartStop(true);
-  await startApplying();
+  appEvents.emit(APPEVENTS.APP_START, null);
   return true;
 });
 

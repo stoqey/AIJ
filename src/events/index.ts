@@ -1,4 +1,5 @@
 export const APPEVENTS = {
+    APP_START: 'APP_START',
     APP_STOP: 'APP_STOP',
     LIST_STOP: 'LIST_STOP',
 
