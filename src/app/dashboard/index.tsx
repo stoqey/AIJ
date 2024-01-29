@@ -22,11 +22,17 @@ export const Dashboard = ({ state }: LayoutPageProps) => {
     questions = [],
   } = state;
 
+  const searchUrl = "https://ca.indeed.com/jobs?q=";
+
+  const [search, setSearch] = React.useState(searchUrl);
+
+  const handleSearch = (search: string) => {
+    setSearch(search);
+  };
+
   const invokeEvent = async (eventName: string, args?: any) => {
     await (window as any).api.invoke(eventName, args);
   };
-
-  const searchUrl = "https://ca.indeed.com/jobs?q=nodejs";
 
   const allEvents = [
     // { title: "Main", name: "list", isRunning: isListRunning, args: searchUrl },
@@ -51,20 +57,19 @@ export const Dashboard = ({ state }: LayoutPageProps) => {
 
           <div className="rounded-md shadow-sm mb-2">
             <input
-              defaultValue={searchUrl}
+              value={search}
               name="search"
               id="search"
-              //   disabled={disabled}
               className="h-10 block w-full rounded-md border border-gray-200 pl-9 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               placeholder="Search by name..."
               spellCheck={false}
-              // onChange={(e) => handleSearch(e.target.value)}
+              onChange={(e) => handleSearch(e.target.value)}
             />
           </div>
 
           <div className="flex justify-center">
             <Button
-              onClick={() => invokeEvent("list:start", searchUrl)}
+              onClick={() => invokeEvent("list:start", search)}
               disabled={isListRunning}
               loading={isListRunning}
             >
@@ -76,7 +81,7 @@ export const Dashboard = ({ state }: LayoutPageProps) => {
               {isListRunning && (
                 <Button
                   color="red"
-                  onClick={() => invokeEvent("list:stop", searchUrl)}
+                  onClick={() => invokeEvent("list:stop", search)}
                 >
                   {" "}
                   Stop{" "}
