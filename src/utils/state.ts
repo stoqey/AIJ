@@ -1,5 +1,6 @@
 import { isEmpty, uniqBy } from "lodash";
 
+import { Question } from "../app/questions/interfaces";
 import fs from "fs";
 import path from "path";
 
@@ -104,4 +105,82 @@ export const addJob = async (job: AppJob) => {
     const newState = { ...state, jobs: newJobs };
     await setState(newState);
     return newState;
-}
+};
+
+
+function getReadableId(question: string) {
+    return question.replace(/[^a-zA-Z0-9]/g, "-").toLowerCase().substring(0, 200);
+};
+
+
+// QUESTIONS
+
+// get questions
+export function getAllQuestion(): Question[] {
+    try {
+        const appDataDirPath = getAppDataPath();
+        const questionDirPath = path.join(appDataDirPath, "questions");
+
+        // get all files in questions dir
+        const files = fs.readdirSync(questionDirPath);
+        const questions = files.map((file) => {
+            const questionFile = path.join(questionDirPath, file);
+            const questionDataString = fs.readFileSync(questionFile);
+            const questionData = JSON.parse(questionDataString.toString());
+            return questionData as Question;
+        });
+
+        return questions;
+    }
+    catch (error) {
+        return null;
+    }
+};
+
+export function saveQuestion(question: Question): boolean {
+    try {
+        const appDataDirPath = getAppDataPath();
+        const questionDirPath = path.join(appDataDirPath, "questions");
+        const questionFile = `${getReadableId(question.question)}.json`;
+        // Create appDataDir if not exist
+        if (!fs.existsSync(questionDirPath)) {
+            fs.mkdirSync(questionDirPath);
+        }
+
+        const questionFilDestination = path.join(appDataDirPath, questionFile);
+        const state = JSON.stringify(question, null, 2);
+
+        fs.writeFileSync(questionFilDestination, state);
+        return true;
+    }
+    catch (error) {
+        return false;
+    }
+};
+
+
+// save resume text to file
+// load resume text from file
+export const getResume = () => {
+    try {
+        const appDataDirPath = getAppDataPath();
+        const resumeFilePath = path.join(appDataDirPath, "resume.txt");
+        const resumeText = fs.readFileSync(resumeFilePath);
+        return resumeText.toString();
+    }
+    catch (error) {
+        return null;
+    }
+};
+
+export const saveResume = (resume: string) => {
+    try {
+        const appDataDirPath = getAppDataPath();
+        const resumeFilePath = path.join(appDataDirPath, "resume.txt");
+        fs.writeFileSync(resumeFilePath, resume);
+        return true;
+    }
+    catch (error) {
+        return false;
+    }
+};

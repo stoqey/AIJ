@@ -19,6 +19,7 @@ import React from "react";
 import _get from "lodash/get";
 import { questionSamples } from "./list.sample";
 import { uniq } from "lodash";
+
 // import {
 //   ClockIcon,
 //   CogIcon,
@@ -26,7 +27,6 @@ import { uniq } from "lodash";
 //   ShoppingCartIcon,
 //   StatusOnlineIcon,
 // } from "@heroicons/react/outline";
-
 
 const cities = [
   {
@@ -210,6 +210,11 @@ export const ListQuestions = () => {
     }
   };
 
+  const handleSaveQuestion = () => {
+    console.log("save question");
+    
+  }
+
   return (
     <Card className="max-w-xl">
       <Bold>Questions</Bold>
@@ -249,6 +254,12 @@ export const ListQuestions = () => {
                   question={selectedQuestion}
                   handleChangeAnswer={handleChangeAnswer}
                 />
+
+                <div className="flex justify-center mt-2">
+                  <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Save
+                  </button>
+                </div>
               </Card>
             </Col>
           )}

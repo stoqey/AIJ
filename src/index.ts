@@ -1,6 +1,6 @@
 import { APPEVENTS, AppEvents } from './events';
 import { BrowserWindow, app, dialog, ipcMain, shell } from 'electron';
-import { getState, setState } from "./utils/state";
+import { getAllQuestion, getResume, getState, saveQuestion, saveResume, setState } from "./utils/state";
 
 import { gotoMainPage } from './config/app';
 import packageJson from '../package.json';
@@ -63,7 +63,7 @@ const createWindow = (): void => {
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
       nodeIntegration: true,
-      devTools: false,
+      // devTools: false,
     },
   });
 
@@ -136,6 +136,27 @@ ipcMain.handle('app:stop', async (event) => {
 ipcMain.handle('state', async (event) => {
   const state = await getState();
   return state;
+});
+
+
+ipcMain.handle('questions:getall', async (event) => {
+  const questions = await getAllQuestion();
+  return questions;
+});
+
+ipcMain.handle('questions:save', async (event, question) => {
+  const savedQuestion = await saveQuestion(question as any);
+  return savedQuestion;
+});
+
+ipcMain.handle('resume:get', async (event, question) => {
+  const savedResume = await getResume();
+  return savedResume;
+});
+
+ipcMain.handle('resume:save', async (event, resume) => {
+  const savedResume = await saveResume(resume as any);
+  return savedResume;
 });
 
 ipcMain.handle('my-invokable-ipc', async (event, ...args) => {

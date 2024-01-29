@@ -6,7 +6,14 @@ const {
     ipcRenderer
 } = require("electron");
 
-let validChannels = ["my-invokable-ipc", "state", "app:start", "app:stop", "list:start", "list:stop", "settings:save"]; // list of ipcMain.handle channels you want access in frontend to
+let validChannels = ["my-invokable-ipc",
+    "state",
+    "app:start", "app:stop",
+    "list:start", "list:stop",
+    "settings:save",
+    "questions:getall", "questions:save",
+    "resume:get", "resume:save",
+]; // list of ipcMain.handle channels you want access in frontend to
 // All of the Node.js APIs are available in the preload process.
 // It has the same sandbox as a Chrome extension.
 // window.addEventListener('DOMContentLoaded', () => {
