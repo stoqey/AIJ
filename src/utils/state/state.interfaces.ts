@@ -18,6 +18,10 @@ export interface BEState {
     settings: {
         key: string;
         path: string;
+    },
+    auth?: {
+        access_token: string;
+        refresh_token: string;
     }
     // TODO: add more states
 };

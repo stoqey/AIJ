@@ -271,9 +271,10 @@ export const ListQuestions = () => {
   }, [search]);
 
   const handleSaveQuestion = async () => {
+    const questionToSave = { ...selectedQuestion, isNew: false };
     const saveQuestion = await (window as any).api.invoke(
       "questions:save",
-      selectedQuestion
+      questionToSave
     );
     if (saveQuestion) {
       console.log("saveQuestion", saveQuestion);
@@ -281,7 +282,7 @@ export const ListQuestions = () => {
 
     const allquestions = questions.map((item) => {
       if (item.question.inputId === selectedQuestion.question.inputId) {
-        return selectedQuestion;
+        return questionToSave;
       }
       return item;
     });

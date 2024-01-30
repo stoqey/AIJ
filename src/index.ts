@@ -3,6 +3,7 @@ import { AppJob, BEState, addApplied, getAllQuestion, getResume, getState, readQ
 import { BrowserWindow, app, dialog, ipcMain, shell } from 'electron';
 import { gotoAppPage, gotoMainPage } from './config/app';
 
+import { getAuthApi } from './api';
 import packageJson from '../package.json';
 import path from 'node:path';
 
@@ -27,17 +28,41 @@ if (process.defaultApp) {
 
 const gotTheLock = app.requestSingleInstanceLock()
 
+
+const launchAppFromUrl = async (url: string) => {
+
+  try {
+    const urlObj = new URL(url);
+    const access_token = urlObj.searchParams.get('access_token');
+    const refresh_token = urlObj.searchParams.get('refresh_token');
+    if (access_token && refresh_token) {
+      const getAuth = await getAuthApi({ access_token, refresh_token });
+      if (!getAuth) {
+        throw new Error("Error logging in, please try again");
+      }
+      dialog.showErrorBox('Success signin', JSON.stringify(getAuth));
+    }
+  }
+  catch (error) {
+    console.error("Error", error);
+    dialog.showErrorBox('Error opening', error.message || "Error opening app");
+  }
+}
 if (!gotTheLock) {
   app.quit()
 } else {
-  app.on('second-instance', (event, commandLine, workingDirectory) => {
+  app.on('second-instance', async (event, commandLine, workingDirectory) => {
     // Someone tried to run a second instance, we should focus our window.
     if (mainWindow) {
       if (mainWindow.isMinimized()) mainWindow.restore()
       mainWindow.focus()
     }
 
-    dialog.showErrorBox('Welcome Back', `You arrived from: ${commandLine.pop().slice(0, -1)}`)
+    const url = commandLine.pop().slice(0, -1);
+    if (url) {
+      await launchAppFromUrl(url);
+    }
+
   })
 
   // Create mainWindow, load the rest of the app, etc...
@@ -45,8 +70,10 @@ if (!gotTheLock) {
     createWindow()
   })
 
-  app.on('open-url', (event, url) => {
-    dialog.showErrorBox('Welcome Back', `You arrived from: ${url}`)
+  app.on('open-url', async (event, url) => {
+    if (url) {
+      await launchAppFromUrl(url);
+    }
   })
 }
 

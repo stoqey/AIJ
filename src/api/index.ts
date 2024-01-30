@@ -1,6 +1,10 @@
 // api with axios
 
+import { getState, setState } from "../utils/state";
+
+import _get from "lodash/get";
 import axios from 'axios';
+import { isEmpty } from "lodash";
 
 const api = axios.create({
     baseURL: 'http://localhost:3331',
@@ -12,10 +16,47 @@ interface IResponse {
     // data: any;
 };
 
+
+interface GetAuth {
+    access_token: string;
+    refresh_token: string;
+};
+
+interface GetAuthApiRes {
+    success: boolean;
+    message: string;
+    data: { userId: string, credits: number, auth: any }
+};
+
+
+export const getAuthApi = async (args: GetAuth): Promise<any> => {
+    try {
+        const response = await api.post<GetAuthApiRes>('/api/auth', args);
+        if (response.status !== 200) {
+            throw new Error("error");
+        }
+        const state = await getState();
+        const data = response.data;
+        const access_token = _get(data, "data.auth.session.access_token");
+        const refresh_token = _get(data, "data.auth.session.refresh_token");
+        if (isEmpty(access_token) || isEmpty(refresh_token)) {
+            throw new Error("error getting tokens");
+        };
+        const newAuth = { access_token, refresh_token };
+        await setState({ ...state, auth: newAuth });
+        return newAuth;
+    }
+    catch (error) {
+        console.error("Error getAuthApi", error);
+        return null;
+    }
+
+}
+
+
 interface IMainResponse extends IResponse {
     data: any;
 };
-
 
 export const getMainApi = async (): Promise<any> => {
     try {
