@@ -13,6 +13,7 @@ let validChannels = ["my-invokable-ipc",
     "settings:save",
     "questions:getall", "questions:save", "questions:read",
     "resume:get", "resume:save",
+    "open:link",
 ]; // list of ipcMain.handle channels you want access in frontend to
 // All of the Node.js APIs are available in the preload process.
 // It has the same sandbox as a Chrome extension.

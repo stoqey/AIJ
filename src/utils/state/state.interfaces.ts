@@ -20,8 +20,15 @@ export interface BEState {
         path: string;
     },
     auth?: {
+        email?: string;
+        credits?: number;
         access_token: string;
         refresh_token: string;
+        res: {
+            status?: number;
+            message?: string;
+            success: boolean;
+        }
     }
     // TODO: add more states
 };

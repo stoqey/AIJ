@@ -21,7 +21,7 @@ export const useAppState = (): BEState => {
   useEffect(() => {
     const intervalId = setInterval(() => {
       getState().then((fetchedData) => {
-        console.log("fetchedData", fetchedData);
+        // console.log("fetchedData", fetchedData);
       });
     }, 1000);
 

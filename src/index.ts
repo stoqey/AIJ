@@ -29,12 +29,22 @@ if (process.defaultApp) {
 const gotTheLock = app.requestSingleInstanceLock()
 
 
-const launchAppFromUrl = async (url: string) => {
+const getAppAuth = async (urlLinking?: string) => {
+
+  let access_token, refresh_token;
 
   try {
-    const urlObj = new URL(url);
-    const access_token = urlObj.searchParams.get('access_token');
-    const refresh_token = urlObj.searchParams.get('refresh_token');
+    if (urlLinking) {
+      const urlObj = new URL(urlLinking);
+      access_token = urlObj.searchParams.get('access_token');
+      refresh_token = urlObj.searchParams.get('refresh_token');
+
+    } else {
+      const state = await getState();
+      access_token = state.auth.access_token;
+      refresh_token = state.auth.refresh_token;
+    }
+
     if (access_token && refresh_token) {
       const getAuth = await getAuthApi({ access_token, refresh_token });
       if (!getAuth) {
@@ -60,19 +70,20 @@ if (!gotTheLock) {
 
     const url = commandLine.pop().slice(0, -1);
     if (url) {
-      await launchAppFromUrl(url);
+      await getAppAuth(url);
     }
 
   })
 
   // Create mainWindow, load the rest of the app, etc...
   app.whenReady().then(() => {
+    console.log("app.whenReady");
     createWindow()
   })
 
   app.on('open-url', async (event, url) => {
     if (url) {
-      await launchAppFromUrl(url);
+      await getAppAuth(url);
     }
   })
 }
@@ -104,7 +115,10 @@ const createWindow = (): void => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on('ready', () => {
+  createWindow();
+  getAppAuth();
+});
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
@@ -116,6 +130,7 @@ app.on('window-all-closed', () => {
 });
 
 app.on('activate', () => {
+  console.log("activate");
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
@@ -254,6 +269,12 @@ ipcMain.handle('resume:get', async (event, question) => {
 ipcMain.handle('resume:save', async (event, resume) => {
   const savedResume = await saveResume(resume as any);
   return savedResume;
+});
+
+ipcMain.handle('open:link', async (event, link) => {
+  if (!link) return;
+  await shell.openExternal(link);
+  return true;
 });
 
 ipcMain.handle('my-invokable-ipc', async (event, ...args) => {

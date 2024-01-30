@@ -1,3 +1,4 @@
+import AuthPage from "./auth";
 import { BEState } from "../utils/state/state.interfaces";
 import Dashboard from "./dashboard";
 import Navbar from "./navbar";
@@ -5,6 +6,7 @@ import Questions from "./questions";
 import React from "react";
 import Resume from "./resume";
 import Settings from "./settings";
+import _get from "lodash/get";
 import { isEmpty } from "lodash";
 import { useAppState } from "./hooks";
 
@@ -19,7 +21,7 @@ const NotFound = () => {
 const routes = [
   { path: "", component: Dashboard },
   { path: "questions", component: Questions },
-  { path: "settings", component: Settings },
+  { path: "account", component: Settings },
   { path: "resume", component: Resume },
   { path: "*", component: NotFound },
 ];
@@ -49,6 +51,17 @@ export const Layout = () => {
     : route
     ? route.component
     : NotFound;
+
+  const isAuth = _get(state, "auth.res.success");
+
+  if (!isAuth) {
+    return (
+      <div className="h-full bg-gray-50 w-full">
+        <AuthPage />
+      </div>
+    );
+  };
+  
   return (
     <div className="h-full bg-gray-50 w-full">
       <Navbar user={null} />

@@ -37,14 +37,28 @@ export const getAuthApi = async (args: GetAuth): Promise<any> => {
         }
         const state = await getState();
         const data = response.data;
-        const access_token = _get(data, "data.auth.session.access_token");
-        const refresh_token = _get(data, "data.auth.session.refresh_token");
-        if (isEmpty(access_token) || isEmpty(refresh_token)) {
-            throw new Error("error getting tokens");
-        };
-        const newAuth = { access_token, refresh_token };
-        await setState({ ...state, auth: newAuth });
-        return newAuth;
+        if (data.success !== true) {
+            const message = _get(data, "message");
+            const status = _get(data, "status");
+            const newAuth = { ...state.auth, res: { status, message, success: data.success } };
+            await setState({ ...state, auth: newAuth });
+            return newAuth;
+        } else {
+
+            const access_token = _get(data, "data.auth.session.access_token");
+            const refresh_token = _get(data, "data.auth.session.refresh_token");
+            if (isEmpty(access_token) || isEmpty(refresh_token)) {
+                throw new Error("error getting tokens");
+            };
+            
+            const email = _get(data, "data.auth.user.email", "");
+            const credits = _get(data, "data.credits", 0);
+            const newAuth = { access_token, refresh_token, email, credits, res: { success: true } };
+            await setState({ ...state, auth: newAuth });
+            return newAuth;
+        }
+
+
     }
     catch (error) {
         console.error("Error getAuthApi", error);
