@@ -54,14 +54,18 @@ export const Layout = () => {
 
   const isAuth = _get(state, "auth.res.success");
 
+  if (!state) {
+    return null;
+  }
+
   if (!isAuth) {
     return (
       <div className="h-full bg-gray-50 w-full">
         <AuthPage />
       </div>
     );
-  };
-  
+  }
+
   return (
     <div className="h-full bg-gray-50 w-full">
       <Navbar user={null} />

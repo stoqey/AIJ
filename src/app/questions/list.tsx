@@ -70,7 +70,7 @@ const RenderCheckbox = ({
         </span>
       </label>
       <label
-        className="mt-px font-light text-gray-700 cursor-pointer select-none w-full"
+        className="mt-px font-light text-gray-700 cursor-pointer select-none w-full text-xl"
         htmlFor={id}
       >
         {title}
@@ -119,6 +119,8 @@ const RenderQuestion = ({
     case "text":
       return (
         <Textarea
+          className="w-full text-xl"
+          rows={15}
           value={questionAnswerText}
           onChange={(e) => {
             const answer = {
@@ -329,34 +331,46 @@ export const ListQuestions = () => {
                 overflowY: "scroll",
               }}
             >
-              {filteredQuestions.map((item) => (
-                <ListItem
-                  onClick={() => setSelectedQuestion(item as QuestionAnswer)}
-                  key={item.question.inputId}
-                  className=" hover:bg-gray-100 cursor-pointer px-2"
-                >
-                  <p className="truncate">{item.question.question}</p>
-                  {item.isNew && (
-                    <Text>
-                      <Badge>New</Badge>{" "}
-                    </Text>
-                  )}
-                </ListItem>
-              ))}
+              {filteredQuestions.map((item) => {
+                const selectedQuesId = _get(
+                  selectedQuestion,
+                  "question.inputId"
+                );
+                const currentQuesId = _get(item, "question.inputId");
+                const isSelected = selectedQuesId === currentQuesId;
+                return (
+                  <ListItem
+                    onClick={() => setSelectedQuestion(item as QuestionAnswer)}
+                    key={item.question.inputId}
+                    className={` hover:bg-gray-100 cursor-pointer px-2 ${
+                      isSelected ? "bg-gray-200" : ""
+                    }`}
+                  >
+                    <Title className="truncate">{item.question.question}</Title>
+                    {item.isNew && (
+                      <Text>
+                        <Badge>New</Badge>{" "}
+                      </Text>
+                    )}
+                  </ListItem>
+                );
+              })}
             </List>
           </Col>
 
           {selectedQuestion && (
             <Col numColSpan={1} numColSpanLg={2}>
-              <div>
-                <div className="m-1">
+              <div className="">
+                <div style={{ marginBottom: "20px" }}>
                   <Metric>{selectedQuestion.question.question}</Metric>
                 </div>
 
-                <RenderQuestion
-                  question={selectedQuestion}
-                  handleChangeAnswer={handleChangeAnswer}
-                />
+                <div>
+                  <RenderQuestion
+                    question={selectedQuestion}
+                    handleChangeAnswer={handleChangeAnswer}
+                  />
+                </div>
 
                 <div className="flex justify-center mt-2">
                   <button

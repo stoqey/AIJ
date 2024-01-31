@@ -11,6 +11,8 @@ import { rendererConfig } from './webpack.renderer.config';
 
 const config: ForgeConfig = {
   packagerConfig: {
+    name: packageJson.productName,
+    icon: './src/assets/icon',
     asar: true,
     protocols: [
       {
@@ -47,6 +49,18 @@ const config: ForgeConfig = {
       },
     }),
   ],
+  publishers: [
+    {
+      name: '@electron-forge/publisher-github',
+      config: {
+        repository: {
+          owner: 'ceddybi',
+          name: 'AIJ'
+        },
+        prerelease: true
+      }
+    }
+  ]
 };
 
 export default config;

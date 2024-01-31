@@ -47,15 +47,15 @@ export const Dashboard = ({ state }: LayoutPageProps) => {
   return (
     <Card>
       <Grid numItems={1} numItemsSm={2} numItemsLg={2} className="gap-3">
-        <div>
+        <div className="flex flex-col items-center w-full">
           <div className="flex items-center">
-            <Metric>Jobs</Metric>
+            <Bold>Jobs</Bold>
             <div className="p-3">
-              <Bold> {jobs.length} </Bold>
+              <Metric> {jobs.length} </Metric>
             </div>
           </div>
 
-          <div className="rounded-md shadow-sm mb-2">
+          <div className="rounded-md shadow-sm mb-2 w-full">
             <input
               value={search}
               name="search"
@@ -74,7 +74,7 @@ export const Dashboard = ({ state }: LayoutPageProps) => {
               loading={isListRunning}
             >
               {" "}
-              {!isListRunning ? "Run" : "Running"}{" "}
+              {!isListRunning ? "Fetch jobs" : "Fetching jobs ...."}{" "}
             </Button>
 
             <div className="ml-2">
@@ -84,18 +84,18 @@ export const Dashboard = ({ state }: LayoutPageProps) => {
                   onClick={() => invokeEvent("list:stop", search)}
                 >
                   {" "}
-                  Stop{" "}
+                  Stop fetching{" "}
                 </Button>
               )}
             </div>
           </div>
         </div>
 
-        <div>
+        <div className="flex flex-col items-center w-full justify-center">
           <div className="flex items-center">
-            <Metric>Applications</Metric>
+            <Bold>Applications</Bold>
             <div className="p-3">
-              <Bold> {applied.length} </Bold>
+              <Metric> {applied.length} </Metric>
             </div>
           </div>
 
@@ -106,7 +106,7 @@ export const Dashboard = ({ state }: LayoutPageProps) => {
               loading={isAppRunning}
             >
               {" "}
-              {!isAppRunning ? "Run" : "Running"}{" "}
+              {!isAppRunning ? "Apply with AI" : "AI Applying ..."}{" "}
             </Button>
 
             <div className="ml-2">
@@ -116,7 +116,7 @@ export const Dashboard = ({ state }: LayoutPageProps) => {
                   onClick={() => invokeEvent("app:stop", searchUrl)}
                 >
                   {" "}
-                  Stop{" "}
+                  Stop AI{" "}
                 </Button>
               )}
             </div>
