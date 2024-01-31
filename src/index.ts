@@ -1,9 +1,9 @@
 import { APPEVENTS, AppEvents } from './events';
 import { AppJob, BEState, addApplied, getAllQuestion, getResume, getState, readQuestion, saveQuestion, saveResume, setState } from "./utils/state";
-import { BrowserWindow, app, dialog, ipcMain, shell } from 'electron';
+import { BrowserWindow, app, dialog, ipcMain, session, shell } from 'electron';
+import { baseURL, getAuthApi } from './api';
 import { gotoAppPage, gotoMainPage } from './config/app';
 
-import { getAuthApi } from './api';
 import packageJson from '../package.json';
 import path from 'node:path';
 import { updateElectronApp } from "update-electron-app";
@@ -50,14 +50,13 @@ const getAppAuth = async (urlLinking?: string) => {
     if (access_token && refresh_token) {
       const getAuth = await getAuthApi({ access_token, refresh_token });
       if (!getAuth) {
-        throw new Error("Error logging in, please try again");
+        throw new Error("Error logging in");
       }
-      dialog.showErrorBox('Success signin', JSON.stringify(getAuth));
     }
   }
   catch (error) {
     console.error("Error", error);
-    dialog.showErrorBox('Error opening', error.message || "Error opening app");
+    dialog.showErrorBox(error.message || "Error opening app", "Please try again");
   }
 }
 if (!gotTheLock) {
@@ -119,6 +118,12 @@ const createWindow = (): void => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
+  session.defaultSession.protocol.registerFileProtocol('static', (request, callback) => {
+    const fileUrl = request.url.replace('static://', '');
+    const filePath = path.join(app.getAppPath(), '.webpack/renderer', fileUrl);
+    console.log("filePath", filePath);
+    callback(filePath);
+  });
   createWindow();
   getAppAuth();
 });
@@ -274,9 +279,16 @@ ipcMain.handle('resume:save', async (event, resume) => {
   return savedResume;
 });
 
-ipcMain.handle('open:link', async (event, link) => {
-  if (!link) return;
+ipcMain.handle('open:link', async (event, ogLink) => {
+  const link = `${baseURL}/signin/app`;
   await shell.openExternal(link);
+  return true;
+});
+
+ipcMain.handle('logout', async (event, ogLink) => {
+  const state = await getState();
+  const newState = { ...state, auth: {} as any };
+  await setState(newState);
   return true;
 });
 

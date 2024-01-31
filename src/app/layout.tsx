@@ -61,7 +61,7 @@ export const Layout = () => {
   if (!isAuth) {
     return (
       <div className="h-full bg-gray-50 w-full">
-        <AuthPage />
+        <AuthPage state={state} />
       </div>
     );
   }

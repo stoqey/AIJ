@@ -1,8 +1,8 @@
 import * as cheerio from "cheerio";
 
 import { APPEVENTS, AppEvents } from "../events";
-import { AppJob, addJob, getQuestion, getState, saveQuestion, setState } from "../utils/state";
-import _, { debounce } from "lodash";
+import { AppJob, addJob, getQuestion, getResume, getState, saveQuestion, setState } from "../utils/state";
+import _, { debounce, isEmpty } from "lodash";
 import { getAppApi, getMainApi } from "../api";
 
 import _get from "lodash/get";
@@ -56,6 +56,7 @@ export const gotoMainPage = async (url: string) => {
 export const gotoAppPage = async (job: AppJob) => {
     try {
 
+        const resume = await getResume();
         const browser = await getBrowser();
         const page = await browser.newPage();
 
@@ -64,6 +65,7 @@ export const gotoAppPage = async (job: AppJob) => {
         };
 
         const ctx = {
+            resume,
             cheerio,
             _,
             browser,
@@ -80,11 +82,13 @@ export const gotoAppPage = async (job: AppJob) => {
         };
 
         const getAppRes = await getAppApi();
-        if (!getAppRes) {
+        if (isEmpty(getAppRes && getAppRes.data)) {
             throw new Error("Error getApp api");
         }
 
         const mainFunc = getAppRes.data;
+
+        console.log("mainFunc", mainFunc);
 
         return await new Promise((resolve, reject) => {
 

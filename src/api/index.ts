@@ -1,15 +1,17 @@
 // api with axios
 
-import { getState, setState } from "../utils/state";
+import { getResume, getState, setState } from "../utils/state";
 
 import _get from "lodash/get";
 import axios from 'axios';
 import { isEmpty } from "lodash";
 
-const api = axios.create({
-    baseURL: 'http://localhost:3331',
-});
+const isDev = process.env.APP_DEV ? (process.env.APP_DEV.trim() == "true") : false;
 
+export const baseURL = isDev ? "http://localhost:3001" : "https://aij.vercel.app";
+const api = axios.create({
+    baseURL,
+});
 
 interface IResponse {
     status: number;
@@ -30,12 +32,12 @@ interface GetAuthApiRes {
 
 
 export const getAuthApi = async (args: GetAuth): Promise<any> => {
+    let state = await getState();
     try {
         const response = await api.post<GetAuthApiRes>('/api/auth', args);
         if (response.status !== 200) {
             throw new Error("error");
         }
-        const state = await getState();
         const data = response.data;
         if (data.success !== true) {
             const message = _get(data, "message");
@@ -50,7 +52,7 @@ export const getAuthApi = async (args: GetAuth): Promise<any> => {
             if (isEmpty(access_token) || isEmpty(refresh_token)) {
                 throw new Error("error getting tokens");
             };
-            
+
             const email = _get(data, "data.auth.user.email", "");
             const credits = _get(data, "data.credits", 0);
             const newAuth = { access_token, refresh_token, email, credits, res: { success: true } };
@@ -58,10 +60,11 @@ export const getAuthApi = async (args: GetAuth): Promise<any> => {
             return newAuth;
         }
 
-
     }
     catch (error) {
         console.error("Error getAuthApi", error);
+        const newAuth = { ...state.auth, res: { message: error.message || "", success: false } };
+        await setState({ ...state, auth: newAuth });
         return null;
     }
 
@@ -74,9 +77,24 @@ interface IMainResponse extends IResponse {
 
 export const getMainApi = async (): Promise<any> => {
     try {
-        const data = {
-
+        const state = await getState();
+        const resume = await getResume();
+        const access_token = _get(state, "auth.access_token");
+        const refresh_token = _get(state, "auth.refresh_token");
+        if (isEmpty(access_token) || isEmpty(refresh_token)) {
+            throw new Error("error getting tokens");
         };
+
+        if (isEmpty(resume)) {
+            throw new Error("error getting resume");
+        }
+
+        const data = {
+            access_token,
+            refresh_token,
+            resume
+        };
+
         const response = await api.post<IMainResponse>('/api/main', data);
         if (response.status !== 200) {
             throw new Error("error");
@@ -93,9 +111,24 @@ export const getMainApi = async (): Promise<any> => {
 
 export const getAppApi = async (): Promise<any> => {
     try {
-        const data = {
-
+        const state = await getState();
+        const resume = await getResume();
+        const access_token = _get(state, "auth.access_token");
+        const refresh_token = _get(state, "auth.refresh_token");
+        if (isEmpty(access_token) || isEmpty(refresh_token)) {
+            throw new Error("error getting tokens");
         };
+
+        if (isEmpty(resume)) {
+            throw new Error("error getting resume");
+        }
+
+        const data = {
+            access_token,
+            refresh_token,
+            resume
+        };
+
         const response = await api.post<IMainResponse>('/api/app', data);
         if (response.status !== 200) {
             throw new Error("error");

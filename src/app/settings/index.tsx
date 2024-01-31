@@ -6,6 +6,10 @@ import React from "react";
 export const SettingsPage = ({ state }: LayoutPageProps) => {
   const auth = state.auth;
 
+  const handleSignout = async () => {
+    await (window as any).api.invoke("logout", null);
+  };
+
   if (!auth) {
     // TODO login
     return null;
@@ -22,6 +26,18 @@ export const SettingsPage = ({ state }: LayoutPageProps) => {
       <div className="p-2 flex justify-between">
         <Bold>Email: </Bold>
         <Bold>{email}</Bold>
+      </div>
+
+      <div className="p-2 flex justify-between">
+        <Bold></Bold>
+        <div className="flex justify-center mt-2">
+          <button
+            onClick={handleSignout}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+          >
+            Logout
+          </button>
+        </div>
       </div>
     </Card>
   );
