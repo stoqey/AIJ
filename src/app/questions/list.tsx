@@ -1,28 +1,20 @@
 import { Answer, QuestionAnswer } from "./interfaces";
 import {
   Badge,
-  BadgeDelta,
-  Bold,
   Card,
   Col,
-  Flex,
   Grid,
   List,
   ListItem,
   Metric,
-  Text,
   Textarea,
   Title,
 } from "@tremor/react";
-import {
-  ClockIcon,
-  CogIcon,
-  MagnifyingGlassIcon,
-  MinusCircleIcon,
-  ShoppingCartIcon,
-} from "@heroicons/react/20/solid";
 import { isEmpty, sortBy, uniq, uniqBy } from "lodash";
 
+import {
+  MinusCircleIcon,
+} from "@heroicons/react/20/solid";
 import React from "react";
 import _get from "lodash/get";
 
@@ -270,7 +262,7 @@ export const ListQuestions = () => {
 
   React.useEffect(() => {
     getAllQuestions();
-  }, [search]);
+  }, []);
 
   const handleSaveQuestion = async () => {
     const questionToSave = { ...selectedQuestion, isNew: false };
@@ -347,11 +339,7 @@ export const ListQuestions = () => {
                     }`}
                   >
                     <Title className="truncate">{item.question.question}</Title>
-                    {item.isNew && (
-                      <Text>
-                        <Badge>New</Badge>{" "}
-                      </Text>
-                    )}
+                    {item.isNew && <Badge>New</Badge>}
                   </ListItem>
                 );
               })}
