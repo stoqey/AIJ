@@ -1,3 +1,5 @@
+import 'dotenv/config';
+
 import { AutoUnpackNativesPlugin } from '@electron-forge/plugin-auto-unpack-natives';
 import type { ForgeConfig } from '@electron-forge/shared-types';
 import { MakerRpm } from '@electron-forge/maker-rpm';
@@ -9,6 +11,12 @@ import packageJson from './package.json';
 import { rendererConfig } from './webpack.renderer.config';
 
 const config: ForgeConfig = {
+  // hooks: {
+  //   packageAfterCopy: async (forgeConfig, build_path) => {
+  //     console.log(`\nBuild Path: ${build_path}`);
+  //     await minify(build_path + '/src');
+  //   },
+  // },
   packagerConfig: {
     name: packageJson.productName,
     icon: './src/assets/icon',
@@ -18,7 +26,18 @@ const config: ForgeConfig = {
         "name": packageJson.productName,
         "schemes": [packageJson.name]
       }
-    ]
+    ],
+    osxSign: {
+      identity: process.env.SIGN_ID,
+    }, // object must exist even if empty
+    osxNotarize: {
+      appleId: process.env.APPLE_ID || "",
+      appleIdPassword: process.env.APPLE_PASSWORD || "",
+      teamId: process.env.APPLE_TEAM_ID || ""
+      // appleApiKey: process.env.APPLE_API_KEY || "",
+      // appleApiKeyId: process.env.APPLE_API_KEY_ID || "",
+      // appleApiIssuer: process.env.APPLE_API_ISSUER || ""
+    }
   },
   rebuildConfig: {},
   makers: [new MakerSquirrel({}), new MakerZIP({}, ['darwin']), new MakerRpm({}),

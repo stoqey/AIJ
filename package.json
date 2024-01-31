@@ -7,8 +7,8 @@
   "scripts": {
     "start": "APP_DEV=true electron-forge start",
     "package": "electron-forge package",
-    "make": "electron-forge make",
-    "publish": "electron-forge publish",
+    "make": "DEBUG=electron-osx-sign* electron-forge make --arch=x64 --platform=darwin",
+    "publish": "electron-forge publish --arch=x64 --platform=darwin",
     "lint": "eslint --ext .ts,.tsx ."
   },
   "keywords": [],
@@ -37,6 +37,7 @@
     "@vercel/webpack-asset-relocator-loader": "1.7.3",
     "autoprefixer": "^10.4.17",
     "css-loader": "^6.0.0",
+    "dotenv": "^16.4.1",
     "electron": "28.2.0",
     "eslint": "^8.0.1",
     "eslint-plugin-import": "^2.25.0",
