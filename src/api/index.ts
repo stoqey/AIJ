@@ -6,7 +6,7 @@ import _get from "lodash/get";
 import axios from 'axios';
 import { isEmpty } from "lodash";
 
-const isDev = process.env.APP_DEV ? (process.env.APP_DEV.trim() == "true") : false;
+export const isDev = process.env.APP_DEV ? (process.env.APP_DEV.trim() == "true") : false;
 
 export const baseURL = isDev ? "http://localhost:3001" : "https://aij.vercel.app";
 const api = axios.create({

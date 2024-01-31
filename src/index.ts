@@ -1,7 +1,7 @@
 import { APPEVENTS, AppEvents } from './events';
 import { AppJob, BEState, addApplied, getAllQuestion, getResume, getState, readQuestion, saveQuestion, saveResume, setState } from "./utils/state";
 import { BrowserWindow, app, dialog, ipcMain, session, shell } from 'electron';
-import { baseURL, getAuthApi } from './api';
+import { baseURL, getAuthApi, isDev } from './api';
 import { gotoAppPage, gotoMainPage } from './config/app';
 
 import packageJson from '../package.json';
@@ -111,7 +111,7 @@ const createWindow = (): void => {
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  if (isDev) mainWindow.webContents.openDevTools();
 };
 
 // This method will be called when Electron has finished
