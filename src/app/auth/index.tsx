@@ -4,6 +4,16 @@ import _get from "lodash/get";
 import { isEmpty } from "lodash";
 // import logo from "../../assets/icon.png";
 
+const parseMesaage = (message: string) => {
+  if (message.includes("credit")) {
+    return "You don't have enough credits, please add more credits to continue";
+  }
+  if (message.includes("auth")) {
+    return "Please login to continue";
+  }
+  return "Something went wrong, please try again later";
+};
+
 export const AuthPage = ({ state }: LayoutPageProps) => {
   const authMessage = _get(state, "auth.res.message", "");
 
@@ -20,12 +30,13 @@ export const AuthPage = ({ state }: LayoutPageProps) => {
         src={"static://assets/icon.png"}
         style={{ width: "100px", padding: "5px", marginBottom: "20px" }}
       />
-      
+
       {!isEmpty(authMessage) && (
         <div className="flex justify-center">
-          <div className="text-2xl font-bold">{authMessage}</div>
+          <div className="text-2xl font-bold">{parseMesaage(authMessage)}</div>
         </div>
       )}
+      
       <div className="flex justify-center mt-2">
         <button
           onClick={openAuthLink}
