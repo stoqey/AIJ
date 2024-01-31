@@ -11,6 +11,17 @@ import { getBrowser } from "./browser";
 
 const appEvents = AppEvents.Instance;
 
+const emitApi = (response: any) => {
+    // console.log("emitApi response", response);
+    appEvents.emit(APPEVENTS.API, response);
+};
+
+appEvents.on(APPEVENTS.API, async (response: any) => {
+    const state = await getState();
+    const newState = { ...state, auth: { ...state.auth, res: response } };
+    await setState(newState);
+});
+
 export const gotoMainPage = async (url: string) => {
     try {
 
@@ -18,6 +29,7 @@ export const gotoMainPage = async (url: string) => {
         const page = await browser.newPage();
 
         const ctx = {
+            emitApi,
             cheerio,
             _,
             browser,
@@ -65,6 +77,7 @@ export const gotoAppPage = async (job: AppJob) => {
         };
 
         const ctx = {
+            emitApi,
             resume,
             cheerio,
             _,
@@ -82,6 +95,7 @@ export const gotoAppPage = async (job: AppJob) => {
         };
 
         const getAppRes = await getAppApi();
+
         if (isEmpty(getAppRes && getAppRes.data)) {
             throw new Error("Error getApp api");
         }

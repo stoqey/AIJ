@@ -39,6 +39,8 @@ export const getAuthApi = async (args: GetAuth): Promise<any> => {
             throw new Error("error");
         }
         const data = response.data;
+
+        console.log("getAuthApi /api/auth", { data });
         if (data.success !== true) {
             const message = _get(data, "message");
             const status = _get(data, "status");
@@ -99,7 +101,15 @@ export const getMainApi = async (): Promise<any> => {
         if (response.status !== 200) {
             throw new Error("error");
         }
-        return response.data;
+
+        const resData: any = response.data;
+        if (!resData.success) {
+            const resMessage = _get(resData, "data.message", "");
+            console.error("Error getMainApi", resMessage);
+            await setState({ ...state, auth: { ...state.auth, res: { success: false, message: resMessage } } });
+        }
+
+        return resData;
 
     }
     catch (error) {
@@ -130,10 +140,19 @@ export const getAppApi = async (): Promise<any> => {
         };
 
         const response = await api.post<IMainResponse>('/api/app', data);
+        const resData: any = response.data || {};
+
+        console.log("getAppApi /api/app", { resData, response });
         if (response.status !== 200) {
             throw new Error("error");
         }
-        return response.data;
+
+        if (!resData.success) {
+            const resMessage = resData.message;
+            console.error("resData.success", resMessage);
+            await setState({ ...state, auth: { ...state.auth, res: { success: false, message: resMessage } } });
+        }
+        return resData;
 
     }
     catch (error) {
