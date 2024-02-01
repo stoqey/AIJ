@@ -25,10 +25,16 @@ appEvents.on(APPEVENTS.API, async (response: any) => {
 export const gotoMainPage = async (url: string) => {
     try {
 
+        const state = await getState();
+        const speedApply = _get(state, "settings.speedApply", 500);
+        const speedJobs = _get(state, "settings.speedJobs", 100);
+
         const browser = await getBrowser();
         const page = await browser.newPage();
 
         const ctx = {
+            speedApply,
+            speedJobs,
             emitApi,
             cheerio,
             _,
@@ -68,6 +74,10 @@ export const gotoMainPage = async (url: string) => {
 export const gotoAppPage = async (job: AppJob) => {
     try {
 
+        const state = await getState();
+        const speedApply = _get(state, "settings.speedApply", 500);
+        const speedJobs = _get(state, "settings.speedJobs", 100);
+
         const resume = await getResume();
         const browser = await getBrowser();
         const page = await browser.newPage();
@@ -77,6 +87,8 @@ export const gotoAppPage = async (job: AppJob) => {
         };
 
         const ctx = {
+            speedApply,
+            speedJobs,
             emitApi,
             resume,
             cheerio,

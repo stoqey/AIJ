@@ -41,11 +41,12 @@ let validChannels = ["my-invokable-ipc",
 contextBridge.exposeInMainWorld(
     "api", {
     invoke: (channel: string, data: any) => {
-        if (validChannels.includes(channel)) {
-            // ipcRenderer.invoke accesses ipcMain.handle channels like 'myfunc'
-            // make sure to include this return statement or you won't get your Promise back
-            return ipcRenderer.invoke(channel, data);
-        }
+        return ipcRenderer.invoke(channel, data);
+        // if (validChannels.includes(channel)) {
+        //     // ipcRenderer.invoke accesses ipcMain.handle channels like 'myfunc'
+        //     // make sure to include this return statement or you won't get your Promise back
+        //     return ipcRenderer.invoke(channel, data);
+        // }
     },
 }
 );

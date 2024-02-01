@@ -8,7 +8,7 @@ export const useAppState = (): BEState => {
     jobs: [],
     applied: [],
     questions: [],
-    settings: { key: "", path: "" },
+    settings: { key: "", path: "", speedApply: 1000, speedJobs: 1000 },
     activeJob: null,
   });
 

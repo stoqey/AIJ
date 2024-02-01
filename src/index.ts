@@ -8,7 +8,7 @@ import packageJson from '../package.json';
 import path from 'node:path';
 import { updateElectronApp } from "update-electron-app";
 
-updateElectronApp();
+if (!isDev) { updateElectronApp() }
 
 const appName = packageJson.name;
 const appEvents = AppEvents.Instance;
@@ -103,7 +103,7 @@ const createWindow = (): void => {
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
       nodeIntegration: true,
-      // devTools: false,
+      // devTools: !isDev,
     },
   });
 
@@ -283,6 +283,35 @@ ipcMain.handle('open:link', async (event, ogLink) => {
   const link = `${baseURL}/signin/app`;
   await shell.openExternal(link);
   return true;
+});
+
+const setSpeed = async (isApp: boolean, value: number, setDefault = false) => {
+  const state = await getState();
+  const newSettings = { ...state.settings };
+
+  if (setDefault) {
+    newSettings.speedApply = 500;
+    newSettings.speedJobs = 100;
+    const newState: BEState = { ...state, settings: newSettings };
+    await setState(newState);
+    return newState;
+  };
+
+  newSettings[isApp ? "speedApply" : "speedJobs"] = value;
+  const newState: BEState = { ...state, settings: newSettings };
+  await setState(newState);
+  return newState;
+}
+
+ipcMain.handle('change:speed', async (event, isAppSpeed) => {
+  const [isApp, speed] = isAppSpeed;
+  const speedSet = await setSpeed(isApp, speed);
+  return speedSet;
+});
+
+ipcMain.handle('speed:default', async (event,) => {
+  const resetSpeed = await setSpeed(null, null, true);
+  return resetSpeed;
 });
 
 ipcMain.handle('logout', async (event, ogLink) => {

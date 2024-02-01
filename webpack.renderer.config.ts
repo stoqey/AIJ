@@ -1,8 +1,10 @@
 import type { Configuration } from 'webpack';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
+import UglifyJSPlugin from 'uglifyjs-webpack-plugin';
 import path from 'path';
 import { plugins } from './webpack.plugins';
 import { rules } from './webpack.rules';
+import webpack from 'webpack';
 
 rules.push({
   test: /\.css$/,

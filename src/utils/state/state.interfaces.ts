@@ -18,6 +18,8 @@ export interface BEState {
     settings: {
         key: string;
         path: string;
+        speedJobs: number;
+        speedApply: number;
     },
     auth?: {
         email?: string;

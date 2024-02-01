@@ -44,7 +44,13 @@ const config: ForgeConfig = {
   {
     "name": "@electron-forge/maker-deb",
     "config": {
-      "mimeType": [`x-scheme-handler/${packageJson.name}`]
+      "mimeType": [`x-scheme-handler/${packageJson.name}`],
+      options: {
+        maintainer: packageJson.author.name,
+        homepage: packageJson.homepage,
+        icon: './src/assets/icon.png',
+        categories: ['Utility']
+      }
     }
   }
   ],
