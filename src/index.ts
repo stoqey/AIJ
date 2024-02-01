@@ -111,7 +111,7 @@ const createWindow = (): void => {
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
   // Open the DevTools.
-  if (isDev) mainWindow.webContents.openDevTools();
+  if (isDev) { mainWindow.webContents.openDevTools() };
 };
 
 // This method will be called when Electron has finished

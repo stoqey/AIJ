@@ -2,13 +2,13 @@
   "name": "aij",
   "productName": "AIJ",
   "version": "0.0.1",
-  "description": "My Electron application description",
+  "description": "AI Jobs",
   "main": ".webpack/main",
   "scripts": {
     "start": "APP_DEV=true electron-forge start",
     "package": "electron-forge package",
-    "make": "DEBUG=electron-osx-sign* electron-forge make --arch=x64 --platform=darwin",
-    "publish": "electron-forge publish --arch=x64 --platform=darwin",
+    "make": "DEBUG=electron-osx-sign* electron-forge make --arch=x64 --platform",
+    "publish": "electron-forge publish --arch=x64 --platform",
     "lint": "eslint --ext .ts,.tsx ."
   },
   "keywords": [],
