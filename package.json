@@ -4,7 +4,7 @@
   "version": "0.0.3",
   "description": "AI Jobs",
   "main": ".webpack/main",
-  "homepage": "https://aij.vercel.app",
+  "homepage": "https://algojobs.ca",
   "scripts": {
     "start": "APP_DEV=true electron-forge start",
     "package": "electron-forge package",
