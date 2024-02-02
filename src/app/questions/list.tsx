@@ -172,7 +172,7 @@ export const ListQuestions = () => {
         question
       );
 
-      console.log("savedRead", savedRead);
+      // console.log("savedRead", savedRead);
 
       if (savedRead) {
         // update FE
@@ -270,9 +270,9 @@ export const ListQuestions = () => {
       "questions:save",
       questionToSave
     );
-    if (saveQuestion) {
-      console.log("saveQuestion", saveQuestion);
-    }
+    // if (saveQuestion) {
+    //   console.log("saveQuestion", saveQuestion);
+    // }
 
     const allquestions = questions.map((item) => {
       if (item.question.inputId === selectedQuestion.question.inputId) {

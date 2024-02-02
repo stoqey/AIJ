@@ -40,7 +40,7 @@ export const getAuthApi = async (args: GetAuth): Promise<any> => {
         }
         const data = response.data;
 
-        console.log("getAuthApi /api/auth", { data });
+        // console.log("getAuthApi /api/auth", { data });
         if (data.success !== true) {
             const message = _get(data, "message");
             const status = _get(data, "status");
@@ -142,7 +142,7 @@ export const getAppApi = async (): Promise<any> => {
         const response = await api.post<IMainResponse>('/api/app', data);
         const resData: any = response.data || {};
 
-        console.log("getAppApi /api/app", { resData, response });
+        // console.log("getAppApi /api/app", { resData, response });
         if (response.status !== 200) {
             throw new Error("error");
         }

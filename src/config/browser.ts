@@ -21,7 +21,7 @@ export function getDefaultBrowserPath() {
         };
 
         default: {
-            console.log("Unsupported platform!");
+            // console.log("Unsupported platform!");
             process.exit(1);
         }
     }

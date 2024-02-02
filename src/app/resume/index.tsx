@@ -7,7 +7,7 @@ export const ResumePage = () => {
   React.useEffect(() => {
     const getResume = async () => {
       const resume = await (window as any).api.invoke("resume:get");
-      console.log("current resume", resume);
+      // console.log("current resume", resume);
       setResume(resume);
     };
     getResume();

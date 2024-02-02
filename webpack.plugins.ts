@@ -22,6 +22,6 @@ const uglifyJsPlugin = new UglifyJSPlugin({
 
 });
 
-if (!isDev) {
-  plugins.push(uglifyJsPlugin as any)
-}
+// if (!isDev) {
+//   plugins.push(uglifyJsPlugin as any)
+// }

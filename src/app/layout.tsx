@@ -30,7 +30,7 @@ export const useHashState = () => {
   const [hash, setHash] = React.useState(window.location.hash || "");
   React.useEffect(() => {
     const handleHashChange = () => {
-      console.log("hash change", window.location.hash);
+      // console.log("hash change", window.location.hash);
       setHash(window.location.hash);
     };
     window.addEventListener("hashchange", handleHashChange);

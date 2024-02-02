@@ -56,7 +56,7 @@ export const gotoMainPage = async (url: string) => {
 
 
             appEvents.on(APPEVENTS.LIST_STOP, () => {
-                console.log("list stop");
+                // console.log("list stop");
                 page.close();
                 resolve(true);
             });
@@ -114,12 +114,12 @@ export const gotoAppPage = async (job: AppJob) => {
 
         const mainFunc = getAppRes.data;
 
-        console.log("mainFunc", mainFunc);
+        // console.log("mainFunc", mainFunc);
 
         return await new Promise((resolve, reject) => {
 
             appEvents.on(APPEVENTS.APP_STOP, (jobId: string) => {
-                console.log("app stop", jobId);
+                // console.log("app stop", jobId);
 
                 if (jobId === job.id) {
                     page.close();

@@ -6,7 +6,7 @@
   "main": ".webpack/main",
   "homepage": "https://algojobs.ca",
   "scripts": {
-    "start": "APP_DEV=true electron-forge start",
+    "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "DEBUG=electron-osx-sign* electron-forge make --arch=x64 --platform",
     "publish": "electron-forge publish --arch=x64 --platform",

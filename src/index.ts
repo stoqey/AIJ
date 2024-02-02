@@ -78,7 +78,7 @@ if (!gotTheLock) {
 
   // Create mainWindow, load the rest of the app, etc...
   app.whenReady().then(() => {
-    console.log("app.whenReady");
+    // console.log("app.whenReady");
     createWindow()
   })
 
@@ -121,7 +121,7 @@ app.on('ready', () => {
   session.defaultSession.protocol.registerFileProtocol('static', (request, callback) => {
     const fileUrl = request.url.replace('static://', '');
     const filePath = path.join(app.getAppPath(), '.webpack/renderer', fileUrl);
-    console.log("filePath", filePath);
+    // console.log("filePath", filePath);
     callback(filePath);
   });
   createWindow();
@@ -138,7 +138,7 @@ app.on('window-all-closed', () => {
 });
 
 app.on('activate', () => {
-  console.log("activate");
+  // console.log("activate");
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
@@ -181,7 +181,7 @@ const setAppStartStop = async (isStart: boolean) => {
 }
 
 appEvents.on(APPEVENTS.APP_START, async (job: AppJob) => {
-  console.log("appEvents.on(APPEVENTS.APP_STOP", job);
+  // console.log("appEvents.on(APPEVENTS.APP_STOP", job);
   await runApplying();
 });
 
@@ -198,11 +198,11 @@ async function runApplying(): Promise<any> {
     cantRun = !!activeJob || !state.isAppRunning;
 
     if (cantRun) {
-      console.log("activeJob", { activeJob, isAppRunning: state.isAppRunning });
+      // console.log("activeJob", { activeJob, isAppRunning: state.isAppRunning });
       return null;
     }
 
-    console.log("startApplying", jobs.length);
+    // console.log("startApplying", jobs.length);
     const firstJob = jobs[0];
 
     if (firstJob) {
@@ -225,7 +225,7 @@ async function runApplying(): Promise<any> {
     // get next job
     const nextJob = state.jobs[1];
     if (nextJob && !cantRun) {
-      console.log("nextJob", nextJob);
+      // console.log("nextJob", nextJob);
       appEvents.emit(APPEVENTS.APP_START, null);
     }
 
@@ -233,14 +233,14 @@ async function runApplying(): Promise<any> {
 }
 
 ipcMain.handle('app:start', async (event) => {
-  console.log("app:start");
+  // console.log("app:start");
   await setAppStartStop(true);
   appEvents.emit(APPEVENTS.APP_START, null);
   return true;
 });
 
 ipcMain.handle('app:stop', async (event) => {
-  console.log("app:stop");
+  // console.log("app:stop");
   await setAppStartStop(false);
   appEvents.emit(APPEVENTS.APP_STOP);
   return true;
@@ -252,7 +252,7 @@ ipcMain.handle('state', async (event) => {
 });
 
 ipcMain.handle('questions:read', async (event, question) => {
-  console.log("questions:read", question);
+  // console.log("questions:read", question);
   const savedQuestion = await readQuestion(question as any);
   return savedQuestion;
 });
@@ -264,7 +264,7 @@ ipcMain.handle('questions:getall', async (event) => {
 });
 
 ipcMain.handle('questions:save', async (event, question) => {
-  console.log("questions:save", question);
+  // console.log("questions:save", question);
   const savedQuestion = await saveQuestion(question as any);
   return savedQuestion;
 });

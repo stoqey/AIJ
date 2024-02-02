@@ -29,7 +29,7 @@ export function getAppDataPath() {
             return path.join(process.env["HOME"], "." + appName);
         }
         default: {
-            console.log("Unsupported platform!");
+            // console.log("Unsupported platform!");
             process.exit(1);
         }
     }
