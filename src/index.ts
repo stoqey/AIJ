@@ -76,12 +76,6 @@ if (!gotTheLock) {
 
   })
 
-  // Create mainWindow, load the rest of the app, etc...
-  app.whenReady().then(() => {
-    // console.log("app.whenReady");
-    createWindow()
-  })
-
   app.on('open-url', async (event, url) => {
     if (url) {
       await getAppAuth(url);
