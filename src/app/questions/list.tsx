@@ -12,9 +12,7 @@ import {
 } from "@tremor/react";
 import { isEmpty, sortBy, uniq, uniqBy } from "lodash";
 
-import {
-  MinusCircleIcon,
-} from "@heroicons/react/20/solid";
+import { MinusCircleIcon } from "@heroicons/react/20/solid";
 import React from "react";
 import _get from "lodash/get";
 
@@ -71,13 +69,14 @@ const RenderCheckbox = ({
   );
 };
 
-const RenderQuestion = ({
-  question,
-  handleChangeAnswer,
-}: {
+export interface IRenderQuestion {
   question: QuestionAnswer;
   handleChangeAnswer: (answer: Answer) => void;
-}) => {
+}
+export const RenderQuestion = ({
+  question,
+  handleChangeAnswer,
+}: IRenderQuestion) => {
   const questionInputType = _get(question, "question.inputType", "text");
   const questionInputTypeValue = _get(
     question,
@@ -85,15 +84,21 @@ const RenderQuestion = ({
     "text"
   );
   const questionAnswerText = _get(question, "chainRes.text", "");
+  const questionAnswerError = _get(question, "chainRes.error", false);
 
   switch (questionInputType) {
     case "fieldset":
       const questionAnswers = question.question.answers || [];
       return (
         <div>
+          <div>
+            {questionAnswerError && (
+              <div className="text-red-500">Please select an answer</div>
+            )}
+          </div>
           <List style={{ display: "flex", flexDirection: "column" }}>
             {questionAnswers.map((answer) => {
-              const isChecked = question.chainRes.text.includes(answer.inputId);
+              const isChecked = _get(question, "chainRes.text", "").includes(answer.inputId);
               return (
                 <RenderCheckbox
                   checked={isChecked}
@@ -110,19 +115,29 @@ const RenderQuestion = ({
     default:
     case "text":
       return (
-        <Textarea
-          className="w-full text-xl"
-          rows={15}
-          value={questionAnswerText}
-          onChange={(e) => {
-            const answer = {
-              inputId: question.question.inputId,
-              inputType: question.question.inputType,
-              answerText: e.target.value,
-            };
-            handleChangeAnswer(answer);
-          }}
-        />
+        <>
+          <div>
+            {questionAnswerError && (
+              <div className="text-red-500">
+                Please select enter the correct answer or update resume to cover
+                this question
+              </div>
+            )}
+          </div>
+          <Textarea
+            className="w-full text-xl"
+            rows={15}
+            value={questionAnswerText}
+            onChange={(e) => {
+              const answer = {
+                inputId: question.question.inputId,
+                inputType: question.question.inputType,
+                answerText: e.target.value,
+              };
+              handleChangeAnswer(answer);
+            }}
+          />
+        </>
       );
   }
 };
@@ -133,6 +148,183 @@ interface ListQuestionsState {
   questions: QuestionAnswer[];
   search: string;
 }
+
+export const useQuestions = () => {
+  const [state, setState] = React.useState<ListQuestionsState>({
+    selectedQuestion: null,
+    questions: [],
+    search: "",
+  });
+
+  const { selectedQuestion = null, questions = [], search } = state;
+
+  const handleSearch = (search: string) => {
+    setState({ ...state, search });
+  };
+
+  const clearSearch = () => {
+    setState({ ...state, search: "" });
+  };
+
+  const getFilteredQuestions = () => {
+    let filteredQuestions = questions.filter(
+      (item) =>
+        item &&
+        item.question &&
+        (item.question.question.toLowerCase() || "").includes(
+          search.toLowerCase()
+        )
+    );
+
+    filteredQuestions = sortBy(filteredQuestions, "isNew");
+    return sortBy(filteredQuestions, "date");
+  };
+
+  const readQuestion = async (question: QuestionAnswer) => {
+    console.log("read question", question);
+    if (question.isNew) {
+      //   update BE
+
+      const savedRead = await (window as any).api.invoke(
+        "questions:read",
+        question
+      );
+
+      // console.log("savedRead", savedRead);
+
+      if (savedRead) {
+        // update FE
+        const allquestions = questions.map((item) => {
+          if (item.question.inputId === question.question.inputId) {
+            return { ...question, isNew: false };
+          }
+          return item;
+        });
+
+        setState({
+          ...state,
+          questions: allquestions,
+          selectedQuestion: question,
+        });
+      }
+    } else {
+      setState({ ...state, selectedQuestion: question });
+    }
+  };
+
+  const setSelectedQuestion = async (question: QuestionAnswer) => {
+    await readQuestion(question);
+  };
+
+  const setSelectedAnswerText = (answer: string) => {
+    const selQuestion = { ...selectedQuestion, chainRes: { text: answer } };
+    setSelectedQuestion(selQuestion);
+  };
+
+  const handleChangeAnswer = (answer: Answer) => {
+    if (!selectedQuestion) return;
+    if (!answer) return;
+    const isCheckbox = answer.inputType === "checkbox";
+
+    const questionInputType = _get(
+      selectedQuestion,
+      "question.inputType",
+      "text"
+    );
+    const questionInputTypeValue = _get(
+      selectedQuestion,
+      "question.inputTypeValue",
+      ""
+    );
+
+    const questionAnswerText = _get(selectedQuestion, "chainRes.text", "");
+
+    switch (questionInputType) {
+      case "fieldset":
+        if (isCheckbox) {
+          let curAnswer = questionAnswerText
+            .replace('"', "")
+            .replace('"', "")
+            .split(",");
+
+          if ((curAnswer || "").includes(answer.inputId)) {
+            curAnswer = curAnswer.filter((item) => item !== answer.inputId);
+          } else {
+            curAnswer.push(answer.inputId);
+          }
+
+          const newAnswerText = uniq(curAnswer).join(",");
+          return setSelectedAnswerText(newAnswerText);
+        }
+        return setSelectedAnswerText(answer.inputId);
+
+      default:
+        return setSelectedAnswerText(answer.answerText);
+    }
+  };
+
+  const getAllQuestions = async () => {
+    let questionsApi = await (window as any).api.invoke("questions:getall");
+    if (questionsApi) {
+      questionsApi = questionsApi.filter(
+        (item: QuestionAnswer) => item && item.question && item.question.inputId
+      );
+
+      questionsApi = uniqBy(questionsApi, "question.inputId");
+
+      if (questionsApi.length) {
+        setState({ ...state, questions: questionsApi });
+      }
+    }
+
+    return questionsApi;
+  };
+
+  React.useEffect(() => {
+    getAllQuestions();
+  }, []);
+
+  const handleSaveQuestion = async () => {
+    const questToSave: QuestionAnswer = {
+      ...selectedQuestion,
+      chainRes: {
+        ...selectedQuestion.chainRes,
+        error: false,
+      },
+      isNew: false,
+    };
+
+    const saveQuestion = await (window as any).api.invoke(
+      "questions:save",
+      questToSave
+    );
+    // if (saveQuestion) {
+    //   console.log("saveQuestion", saveQuestion);
+    // }
+
+    const allquestions = questions.map((item) => {
+      if (item.question.inputId === selectedQuestion.question.inputId) {
+        return questToSave;
+      }
+      return item;
+    });
+
+    setState({ ...state, questions: allquestions });
+
+    // await getAllQuestions();
+    return saveQuestion;
+  };
+
+  const filteredQuestions = getFilteredQuestions();
+
+  return {
+    selectedQuestion,
+    questions: state.questions,
+    handleChangeAnswer,
+    handleSaveQuestion,
+    setSelectedQuestion,
+  };
+};
 
 export const ListQuestions = () => {
   const [state, setState] = React.useState<ListQuestionsState>({
@@ -164,6 +356,7 @@ export const ListQuestions = () => {
   };
 
   const readQuestion = async (question: QuestionAnswer) => {
+    console.log("read question", question);
     if (question.isNew) {
       //   update BE
 
@@ -227,7 +420,7 @@ export const ListQuestions = () => {
             .replace('"', "")
             .split(",");
 
-          if (curAnswer.includes(answer.inputId)) {
+          if ((curAnswer || "").includes(answer.inputId)) {
             curAnswer = curAnswer.filter((item) => item !== answer.inputId);
           } else {
             curAnswer.push(answer.inputId);
@@ -265,10 +458,18 @@ export const ListQuestions = () => {
   }, []);
 
   const handleSaveQuestion = async () => {
-    const questionToSave = { ...selectedQuestion, isNew: false };
+    const questToSave: QuestionAnswer = {
+      ...selectedQuestion,
+      chainRes: {
+        ...selectedQuestion.chainRes,
+        error: false,
+      },
+      isNew: false,
+    };
+
     const saveQuestion = await (window as any).api.invoke(
       "questions:save",
-      questionToSave
+      questToSave
     );
     // if (saveQuestion) {
     //   console.log("saveQuestion", saveQuestion);
@@ -276,7 +477,7 @@ export const ListQuestions = () => {
 
     const allquestions = questions.map((item) => {
       if (item.question.inputId === selectedQuestion.question.inputId) {
-        return questionToSave;
+        return questToSave;
       }
       return item;
     });

@@ -23,6 +23,7 @@ export interface QuestionAnswer {
     question: Question;
     chainRes: {
         text: string;
+        error?: boolean;
         [key: string]: any;
     }
     isNew?: boolean;
