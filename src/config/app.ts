@@ -1,7 +1,7 @@
 import * as cheerio from "cheerio";
 
 import { APPEVENTS, AppEvents } from "../events";
-import { AppJob, addJob, getQuestion, getResume, getState, saveQuestion, setState } from "../utils/state";
+import { AppJob, addJob, getAllQuestion, getQuestion, getResume, getState, saveQuestion, setState } from "../utils/state";
 import _, { debounce, isEmpty } from "lodash";
 import { getAppApi, getMainApi } from "../api";
 
@@ -100,6 +100,7 @@ export const gotoAppPage = async (job: AppJob) => {
             addJob,
             axios,
             getQuestion,
+            getAllQuestion,
             saveQuestion,
             setState,
             getState,

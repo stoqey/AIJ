@@ -7,14 +7,27 @@ export interface AppJob {
     easyApply: boolean
 };
 
+export interface Application {
+    job: AppJob;
+    questions?: QuestionAnswer[];
+};
+
 export interface BEState {
+    apps: Application[];
+    completedApps: Application[];
+    skippedApps: Application[];
+
     jobs: AppJob[];
     activeJob: AppJob;
     applied: AppJob[];
+
     questions: QuestionAnswer[];
+
     count: number;
+
     isListRunning?: boolean;
     isAppRunning?: boolean;
+
     settings: {
         key: string;
         path: string;
