@@ -11,11 +11,28 @@ import {
   Text,
   Title,
 } from "@tremor/react";
+import {
+  CheckCircleIcon,
+  QuestionMarkCircleIcon,
+  StopIcon,
+  UserGroupIcon,
+  UserIcon,
+} from "@heroicons/react/20/solid";
+import {
+  ProgressBar,
+  Tab,
+  TabGroup,
+  TabList,
+  TabPanel,
+  TabPanels,
+} from "@tremor/react";
 import { RenderQuestion, useQuestions } from "../questions/list";
 
 import { LayoutPageProps } from "../layout";
 import { QuestionAnswer } from "../questions/interfaces";
+import QuestionsError from "./questions.error";
 import React from "react";
+import { TabExample } from "./tabs";
 import { isEmpty } from "lodash";
 import { useAppState } from "../hooks";
 
@@ -28,15 +45,17 @@ export const Dashboard = ({ state }: LayoutPageProps) => {
     questions = [],
   } = state;
 
+  const useQuestionState = useQuestions();
+
   const {
     questions: savedQuestions,
     selectedQuestion,
     setSelectedQuestion,
     handleChangeAnswer,
     handleSaveQuestion,
-  } = useQuestions();
+  } = useQuestionState;
 
-  const errorQuestions = savedQuestions.filter((q) => !!q.chainRes.error);
+  const errorQuestions = savedQuestions.filter((q) => !!q.chainRes.error) || [];
 
   const searchUrl = "https://ca.indeed.com/jobs?q=";
 
@@ -140,61 +159,34 @@ export const Dashboard = ({ state }: LayoutPageProps) => {
         </div>
       </Grid>
 
-      {errorQuestions.length > 0 && (
-        <div className="flex flex-row">
-          <div className="flex mt-3 flex-col" style={{ width: "50%" }}>
-            <Title> Error Questions {errorQuestions.length} </Title>
-            <List
-              style={{
-                height: "80vh",
-                overflowY: "scroll",
-              }}
-            >
-              {errorQuestions.map((item, index) => (
-                <div className="flex flex-col" key={item.question.inputId}>
-                  <ListItem
-                    onClick={() => setSelectedQuestion(item as QuestionAnswer)}
-                    key={item.question.inputId}
-                    className={` hover:bg-gray-100 cursor-pointer px-2`}
-                  >
-                    <Title className="truncate">
-                      {index + 1} {item.question.question}
-                    </Title>
-                    {/* {item.isNew && <Badge>New</Badge>} */}
-                  </ListItem>
-
-                  <div className="flex justify-start text-red-500 px-4">
-                    {isEmpty(item.chainRes.text) || item.chainRes.text === "."
-                      ? "Error with question"
-                      : item.chainRes.text}
-                  </div>
-                </div>
-              ))}
-            </List>
-          </div>
-
-          {selectedQuestion && (
-            <div className="flex mt-3 flex-col" style={{ width: "50%" }}>
-              <div style={{ marginBottom: "20px" }}>
-                <Metric>{selectedQuestion.question.question}</Metric>
+      <div style={{ marginTop: "20px" }}>
+        <TabGroup>
+          <TabList className="mt-8">
+            <Tab icon={QuestionMarkCircleIcon}>
+              Questions: error ({errorQuestions.length})
+            </Tab>
+            <Tab icon={StopIcon}>Applications: skipped</Tab>
+            <Tab icon={CheckCircleIcon}>Applications: completed</Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel>
+              <QuestionsError {...useQuestionState} />
+            </TabPanel>
+            <TabPanel>
+              <div className="mt-10">
+                <Flex className="mt-4">
+                  <Text className="w-full">Product Z</Text>
+                  <Flex className="space-x-2" justifyContent="end">
+                    <Text>$ 99,484</Text>
+                    <Text>16%</Text>
+                  </Flex>
+                </Flex>
+                <ProgressBar value={12} className="mt-2" />
               </div>
-
-              <RenderQuestion
-                question={selectedQuestion}
-                handleChangeAnswer={handleChangeAnswer}
-              />
-              <div className="flex justify-center mt-2">
-                <button
-                  onClick={handleSaveQuestion}
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                >
-                  Save
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
+            </TabPanel>
+          </TabPanels>
+        </TabGroup>
+      </div>
     </Card>
   );
 };

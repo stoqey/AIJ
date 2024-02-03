@@ -98,7 +98,9 @@ export const RenderQuestion = ({
           </div>
           <List style={{ display: "flex", flexDirection: "column" }}>
             {questionAnswers.map((answer) => {
-              const isChecked = _get(question, "chainRes.text", "").includes(answer.inputId);
+              const isChecked = _get(question, "chainRes.text", "").includes(
+                answer.inputId
+              );
               return (
                 <RenderCheckbox
                   checked={isChecked}
@@ -149,7 +151,15 @@ interface ListQuestionsState {
   search: string;
 }
 
-export const useQuestions = () => {
+export interface UseQuestions {
+  selectedQuestion?: QuestionAnswer;
+  questions: QuestionAnswer[];
+  handleChangeAnswer: (answer: Answer) => void;
+  handleSaveQuestion: () => void;
+  setSelectedQuestion: (question: QuestionAnswer) => void;
+}
+
+export const useQuestions = (): UseQuestions => {
   const [state, setState] = React.useState<ListQuestionsState>({
     selectedQuestion: null,
     questions: [],
