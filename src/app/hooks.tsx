@@ -4,6 +4,9 @@ import { BEState } from "../utils/state";
 
 export const useAppState = (): BEState => {
   const [state, setState] = React.useState<BEState>({
+    apps: [],
+    completedApps: [],
+    skippedApps: [],
     count: 0,
     jobs: [],
     applied: [],

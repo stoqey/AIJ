@@ -202,6 +202,7 @@ async function runApplying(): Promise<any> {
     if (firstJob) {
       await setState({ ...state, activeJob: firstJob });
       await gotoAppPage(firstJob);
+
       await new Promise((resolve, reject) => {
         setTimeout(() => {
           resolve(true);

@@ -1,22 +1,8 @@
-import {
-  Bold,
-  Button,
-  Card,
-  Col,
-  Flex,
-  Grid,
-  List,
-  ListItem,
-  Metric,
-  Text,
-  Title,
-} from "@tremor/react";
+import { Bold, Button, Card, Flex, Grid, Metric, Text } from "@tremor/react";
 import {
   CheckCircleIcon,
   QuestionMarkCircleIcon,
   StopIcon,
-  UserGroupIcon,
-  UserIcon,
 } from "@heroicons/react/20/solid";
 import {
   ProgressBar,
@@ -26,18 +12,17 @@ import {
   TabPanel,
   TabPanels,
 } from "@tremor/react";
-import { RenderQuestion, useQuestions } from "../questions/list";
 
 import { LayoutPageProps } from "../layout";
-import { QuestionAnswer } from "../questions/interfaces";
 import QuestionsError from "./questions.error";
 import React from "react";
-import { TabExample } from "./tabs";
-import { isEmpty } from "lodash";
-import { useAppState } from "../hooks";
+import { useQuestions } from "../questions/list";
 
 export const Dashboard = ({ state }: LayoutPageProps) => {
   const {
+    apps = [],
+    completedApps = [],
+    skippedApps = [],
     isListRunning,
     isAppRunning,
     jobs = [],
@@ -163,10 +148,15 @@ export const Dashboard = ({ state }: LayoutPageProps) => {
         <TabGroup>
           <TabList className="mt-8">
             <Tab icon={QuestionMarkCircleIcon}>
-              Questions: error ({errorQuestions.length})
+              Questions: error {errorQuestions.length && errorQuestions.length}
             </Tab>
-            <Tab icon={StopIcon}>Applications: skipped</Tab>
-            <Tab icon={CheckCircleIcon}>Applications: completed</Tab>
+            <Tab icon={StopIcon}>
+              Applications: skipped {skippedApps.length && skippedApps.length}
+            </Tab>
+            <Tab icon={CheckCircleIcon}>
+              Applications: completed{" "}
+              {completedApps.length && completedApps.length}
+            </Tab>
           </TabList>
           <TabPanels>
             <TabPanel>
