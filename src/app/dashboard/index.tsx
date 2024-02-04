@@ -13,7 +13,7 @@ import {
   TabPanels,
 } from "@tremor/react";
 
-import ApplicationsError from "./applications.error";
+import ApplicationsViews from "./applications.view";
 import { LayoutPageProps } from "../layout";
 import QuestionsError from "./questions.error";
 import React from "react";
@@ -164,12 +164,19 @@ export const Dashboard = ({ state }: LayoutPageProps) => {
               <QuestionsError {...useQuestionState} />
             </TabPanel>
             <TabPanel>
-              <ApplicationsError
+              <ApplicationsViews
+                skipped={true}
                 state={state}
                 useQuestions={useQuestionState}
               />
             </TabPanel>
-            <TabPanel>{/* ApplicationsCompleted */}</TabPanel>
+            <TabPanel>
+              <ApplicationsViews
+                skipped={false}
+                state={state}
+                useQuestions={useQuestionState}
+              />
+            </TabPanel>
           </TabPanels>
         </TabGroup>
       </div>

@@ -31,7 +31,6 @@ export const RenderEditQuestion = (props: RenderEditQuestionProps) => {
       console.log("selectedSavedQuestion", selectedSavedQuestion);
       setSelectedQuestion(selectedSavedQuestion);
     }
-    
   }, [props?.question, savedQuestions]);
 
   if (!question || !question?.question) return null;
@@ -58,18 +57,21 @@ export const RenderEditQuestion = (props: RenderEditQuestionProps) => {
   );
 };
 
-interface ApplicationsErrorProps {
+interface ApplicationsViewProps {
+  skipped?: boolean;
   state: BEState;
   useQuestions: UseQuestions;
 }
-export const ApplicationsError = (props: ApplicationsErrorProps) => {
-  const { state, useQuestions } = props;
+export const ApplicationsViews = (props: ApplicationsViewProps) => {
+  const { state, useQuestions, skipped = false } = props;
   const [selectedApp, setSelectedApp] = React.useState<Application>(null);
-  const { completedApps, skippedApps, apps } = state;
+  const { completedApps, skippedApps } = state;
+
+  const apps = skipped ? skippedApps : completedApps;
 
   return (
     <>
-      {skippedApps.length > 0 && (
+      {apps.length > 0 && (
         <div className="flex flex-row">
           {/* JOB */}
 
@@ -83,23 +85,26 @@ export const ApplicationsError = (props: ApplicationsErrorProps) => {
                 overflowY: "scroll",
               }}
             >
-              {skippedApps.map((item, index) => {
+              {apps.map((item, index) => {
                 const isSelectedJob = selectedApp?.job?.id === item.job.id;
 
                 return (
-                <div className="flex flex-col" key={item.job.id}>
-                  <ListItem
-                    onClick={() => setSelectedApp(item)}
-                    // key={item.question.inputId}
-                    className={`${isSelectedJob? 'bg-gray-200': ''} hover:bg-gray-100 cursor-pointer px-2`}
-                  >
-                    <Title className="truncate">
-                      {index + 1} {item.job.title} - {item.job.company} (
-                      {item.questions.length})
-                    </Title>
-                  </ListItem>
-                </div>
-              )})}
+                  <div className="flex flex-col" key={item.job.id}>
+                    <ListItem
+                      onClick={() => setSelectedApp(item)}
+                      // key={item.question.inputId}
+                      className={`${
+                        isSelectedJob ? "bg-gray-200" : ""
+                      } hover:bg-gray-100 cursor-pointer px-2`}
+                    >
+                      <Title className="truncate">
+                        {index + 1} ({item.questions.length}) {item.job.title} -{" "}
+                        {item.job.company}
+                      </Title>
+                    </ListItem>
+                  </div>
+                );
+              })}
             </List>
           </div>
 
@@ -109,9 +114,29 @@ export const ApplicationsError = (props: ApplicationsErrorProps) => {
               className="flex flex-col overflow-x-scroll"
             >
               <div style={{ marginBottom: "20px" }}>
-                <Metric>
-                  {selectedApp.job.title} - {selectedApp.job.company}
-                </Metric>
+                <div style={{ height: "100px" }}>
+                  <Metric>
+                    {selectedApp.job.title} - {selectedApp.job.company}
+                  </Metric>
+                </div>
+
+                {skipped && (
+                  <div className="flex justify-end gap-3">
+                    <button
+                      // onClick={() => setSelectedApp(null)}
+                      className="bg-blue-500 hover:bg-blue-700 text-white py-1 px-2 rounded"
+                    >
+                      Re-Apply
+                    </button>
+
+                    <button
+                      // onClick={() => setSelectedApp(null)}
+                      className="bg-blue-500 hover:bg-blue-700 text-white py-1 px-2 rounded"
+                    >
+                      Mark as completed
+                    </button>
+                  </div>
+                )}
               </div>
 
               {selectedApp.questions.map((question, index) => (
@@ -129,4 +154,4 @@ export const ApplicationsError = (props: ApplicationsErrorProps) => {
   );
 };
 
-export default ApplicationsError;
+export default ApplicationsViews;
