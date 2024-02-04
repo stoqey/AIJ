@@ -70,10 +70,12 @@ const RenderCheckbox = ({
 };
 
 export interface IRenderQuestion {
+  autosave?: boolean;
   question: QuestionAnswer;
   handleChangeAnswer: (answer: Answer) => void;
 }
 export const RenderQuestion = ({
+  autosave = false,
   question,
   handleChangeAnswer,
 }: IRenderQuestion) => {
@@ -192,34 +194,30 @@ export const useQuestions = (): UseQuestions => {
 
   const readQuestion = async (question: QuestionAnswer) => {
     console.log("read question", question);
-    if (question.isNew) {
-      //   update BE
 
-      const savedRead = await (window as any).api.invoke(
-        "questions:read",
-        question
-      );
+    const savedRead = await (window as any).api.invoke(
+      "questions:read",
+      question
+    );
 
-      // console.log("savedRead", savedRead);
+    // console.log("savedRead", savedRead);
 
-      if (savedRead) {
-        // update FE
-        const allquestions = questions.map((item) => {
-          if (item.question.inputId === question.question.inputId) {
-            return { ...question, isNew: false };
-          }
-          return item;
-        });
+    if (savedRead) {
+      // update FE
+      const allquestions = questions.map((item) => {
+        if (item.question.inputId === question.question.inputId) {
+          return { ...question, isNew: false };
+        }
+        return item;
+      });
 
-        setState({
-          ...state,
-          questions: allquestions,
-          selectedQuestion: question,
-        });
-      }
-    } else {
-      setState({ ...state, selectedQuestion: question });
+      setState({
+        ...state,
+        questions: allquestions,
+        selectedQuestion: question,
+      });
     }
+    
   };
 
   const setSelectedQuestion = async (question: QuestionAnswer) => {

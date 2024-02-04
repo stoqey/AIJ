@@ -171,7 +171,7 @@ export async function readQuestion(question: QuestionAnswer): Promise<boolean> {
     try {
         const isNew = question.isNew;
         if (!isNew) {
-            return false;
+            return await saveQuestion(question)
         };
 
         return await saveQuestion({
