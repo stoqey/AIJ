@@ -1,5 +1,5 @@
 import { APPEVENTS, AppEvents } from './events';
-import { AppJob, BEState, addApplied, getAllQuestion, getResume, getState, readQuestion, saveQuestion, saveResume, setState } from "./utils/state";
+import { AppJob, Application, BEState, addApplied, getAllQuestion, getResume, getState, readQuestion, saveQuestion, saveResume, setState } from "./utils/state";
 import { BrowserWindow, app, dialog, ipcMain, session, shell } from 'electron';
 import { baseURL, getAuthApi, isDev } from './api';
 import { gotoAppPage, gotoMainPage } from './config/app';
@@ -176,10 +176,10 @@ const setAppStartStop = async (isStart: boolean) => {
 
 appEvents.on(APPEVENTS.APP_START, async (job: AppJob) => {
   // console.log("appEvents.on(APPEVENTS.APP_STOP", job);
-  await runApplying();
+  await runApplying(job);
 });
 
-async function runApplying(): Promise<any> {
+async function runApplying(ondemandJob?: AppJob): Promise<any> {
   let jobs: AppJob[] = [];
   let state: any = {};
   let activeJob: AppJob = null;
@@ -192,12 +192,13 @@ async function runApplying(): Promise<any> {
     cantRun = !!activeJob || !state.isAppRunning;
 
     if (cantRun) {
-      // console.log("activeJob", { activeJob, isAppRunning: state.isAppRunning });
-      return null;
+      if (!ondemandJob) {
+        return null;
+      }
     }
 
     // console.log("startApplying", jobs.length);
-    const firstJob = jobs[0];
+    const firstJob = ondemandJob ? ondemandJob : jobs[0];
 
     if (firstJob) {
       await setState({ ...state, activeJob: firstJob });
@@ -226,6 +227,23 @@ async function runApplying(): Promise<any> {
 
   }
 }
+
+ipcMain.handle('app:complete', async (event, app: Application) => {
+  const newState = await addApplied(app.job);
+  newState.skippedApps = (newState.skippedApps || []).filter((a) => a.job?.id !== app.job?.id);
+  if (!(newState.completedApps || []).includes(app)) {
+    newState.completedApps = [...(newState.completedApps || []), app];
+  }
+  await setState(newState);
+  return newState;
+});
+
+ipcMain.handle('app:start:ondemand', async (event, job) => {
+  // console.log("app:start");
+  // await setAppStartStop(true);
+  appEvents.emit(APPEVENTS.APP_START, job);
+  return true;
+});
 
 ipcMain.handle('app:start', async (event) => {
   // console.log("app:start");

@@ -22,13 +22,13 @@ export const RenderEditQuestion = (props: RenderEditQuestionProps) => {
   const question = selectedQuestion;
 
   useEffect(() => {
-    console.log("savedQuestions.length", savedQuestions.length);
+    // console.log("savedQuestions.length", savedQuestions.length);
     const selectedSavedQuestion = savedQuestions.find(
       (q) => q?.question?.question === props?.question?.question?.question
     );
 
     if (!question && selectedSavedQuestion) {
-      console.log("selectedSavedQuestion", selectedSavedQuestion);
+      // console.log("selectedSavedQuestion", selectedSavedQuestion);
       setSelectedQuestion(selectedSavedQuestion);
     }
   }, [props?.question, savedQuestions]);
@@ -60,6 +60,15 @@ export const ApplicationsViews = (props: ApplicationsViewProps) => {
   const { completedApps, skippedApps } = state;
 
   const apps = skipped ? skippedApps : completedApps;
+
+  const reApply = async (app: Application) => {
+    const job = app.job;
+    await (window as any).api.invoke("app:start:ondemand", job);
+  };
+
+  const moveToCompleted = async (app: Application) => {
+    await (window as any).api.invoke("app:complete", app);
+  };
 
   return (
     <>
@@ -115,14 +124,14 @@ export const ApplicationsViews = (props: ApplicationsViewProps) => {
                 {skipped && (
                   <div className="flex justify-end gap-3">
                     <button
-                      // onClick={() => setSelectedApp(null)}
+                      onClick={() => reApply(selectedApp)}
                       className="bg-blue-500 hover:bg-blue-700 text-white py-1 px-2 rounded"
                     >
                       Re-Apply
                     </button>
 
                     <button
-                      // onClick={() => setSelectedApp(null)}
+                      onClick={() => moveToCompleted(selectedApp)}
                       className="bg-blue-500 hover:bg-blue-700 text-white py-1 px-2 rounded"
                     >
                       Mark as completed
