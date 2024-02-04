@@ -18,11 +18,11 @@ export default function Navbar({ user }: { user: any }) {
   const pathname = "";
 
   const signOut = () => {
-    console.log("sign out");
+    // console.log("sign out");
   };
 
   const signIn = () => {
-    console.log("sign in");
+    // console.log("sign in");
   };
 
   return (

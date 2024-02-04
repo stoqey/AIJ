@@ -193,7 +193,7 @@ export const useQuestions = (): UseQuestions => {
   };
 
   const readQuestion = async (question: QuestionAnswer) => {
-    console.log("read question", question);
+    // console.log("read question", question);
 
     const savedRead = await (window as any).api.invoke(
       "questions:read",
@@ -364,7 +364,7 @@ export const ListQuestions = () => {
   };
 
   const readQuestion = async (question: QuestionAnswer) => {
-    console.log("read question", question);
+    // console.log("read question", question);
     if (question.isNew) {
       //   update BE
 
