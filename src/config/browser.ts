@@ -42,7 +42,18 @@ export const getBrowser = async () => {
 
     browser = await puppeteer.launch({
         headless: false,
-        args: ["--no-sandbox", "--disable-setuid-sandbox"],
+        args: [
+            '--disable-extensions',
+            '--disable-gpu',
+            '--disable-dev-shm-usage',
+            '--no-sandbox',
+            // '--single-process',
+            '--disable-background-timers-throttling',
+            '--disable-backgrounding-occluded-windows',
+            '--disable-renderer-backgrounding',
+            '--disable-web-security',
+            '--mute-audio',
+            "--disable-setuid-sandbox"],
         userDataDir,
         executablePath: browserPath,
     });
