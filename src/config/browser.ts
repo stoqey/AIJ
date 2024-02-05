@@ -14,7 +14,7 @@ export function getDefaultBrowserPath() {
             return `/Applications/Google Chrome.app/Contents/MacOS/Google Chrome`;
         }
         case "win32": {
-            return `%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe`;
+            return `\/Program Files\/Google\/Chrome\/Application\/chrome.exe`;
         }
         case "linux": {
             return `/usr/bin/google-chrome`;

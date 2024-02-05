@@ -57,7 +57,7 @@ interface ApplicationsViewProps {
 export const ApplicationsViews = (props: ApplicationsViewProps) => {
   const { state, useQuestions, skipped = false } = props;
   const [selectedApp, setSelectedApp] = React.useState<Application>(null);
-  const { completedApps, skippedApps } = state;
+  const { completedApps = [], skippedApps = [] } = state;
 
   const apps = skipped ? skippedApps : completedApps;
 
