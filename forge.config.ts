@@ -3,11 +3,11 @@ import 'dotenv/config';
 import { AutoUnpackNativesPlugin } from '@electron-forge/plugin-auto-unpack-natives';
 import type { ForgeConfig } from '@electron-forge/shared-types';
 import { MakerRpm } from '@electron-forge/maker-rpm';
-import { MakerSquirrel } from '@electron-forge/maker-squirrel';
 import { MakerZIP } from '@electron-forge/maker-zip';
 import { WebpackPlugin } from '@electron-forge/plugin-webpack';
 import { mainConfig } from './webpack.main.config';
 import packageJson from './package.json';
+import path from 'path';
 import { rendererConfig } from './webpack.renderer.config';
 
 const config: ForgeConfig = {
@@ -40,22 +40,27 @@ const config: ForgeConfig = {
     }
   },
   rebuildConfig: {},
-  makers: [new MakerSquirrel({
-    iconUrl: 'https://raw.githubusercontent.com/ceddybi/AIJ/master/src/assets/icon.png',
-    setupIcon: './src/assets/icon.ico',
-  }), new MakerZIP({}, ['darwin']), new MakerRpm({}),
-  {
-    "name": "@electron-forge/maker-deb",
-    "config": {
-      "mimeType": [`x-scheme-handler/${packageJson.name}`],
-      options: {
-        maintainer: packageJson.author.name,
-        homepage: packageJson.homepage,
-        icon: './src/assets/icon.png',
-        categories: ['Utility']
+  makers: [
+    {
+      name: '@electron-forge/maker-squirrel',
+      config: {
+        iconUrl: 'https://raw.githubusercontent.com/ceddybi/AIJ/master/src/assets/icon.png',
+        setupIcon: path.join(__dirname, '/src/assets/icon.png'),
+        skipUpdateIcon: true,
+      }
+    }, new MakerZIP({}, ['darwin']), new MakerRpm({}),
+    {
+      "name": "@electron-forge/maker-deb",
+      "config": {
+        "mimeType": [`x-scheme-handler/${packageJson.name}`],
+        options: {
+          maintainer: packageJson.author.name,
+          homepage: packageJson.homepage,
+          icon: './src/assets/icon.png',
+          categories: ['Utility']
+        }
       }
     }
-  }
   ],
   plugins: [
     new AutoUnpackNativesPlugin({}),
