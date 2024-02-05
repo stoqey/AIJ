@@ -3,8 +3,7 @@ import { Application, BEState } from "../../utils/state";
 import { List, ListItem, Metric, Title } from "@tremor/react";
 import React, { useEffect, useLayoutEffect } from "react";
 import { RenderQuestion, UseQuestions, useQuestions } from "../questions/list";
-
-import { isEmpty } from "lodash";
+import { isEmpty, uniqBy } from "lodash";
 
 interface RenderEditQuestionProps extends UseQuestions {
   question: QuestionAnswer;
@@ -59,7 +58,7 @@ export const ApplicationsViews = (props: ApplicationsViewProps) => {
   const [selectedApp, setSelectedApp] = React.useState<Application>(null);
   const { completedApps = [], skippedApps = [] } = state;
 
-  const apps = skipped ? skippedApps : completedApps;
+  const apps = uniqBy(skipped ? skippedApps : completedApps, "job.id");
 
   const reApply = async (app: Application) => {
     const job = app.job;

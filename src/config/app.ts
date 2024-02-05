@@ -10,6 +10,7 @@ import axios from "axios";
 import { getBrowser } from "./browser";
 
 const appEvents = AppEvents.Instance;
+appEvents.setMaxListeners(0);
 
 const emitApi = (response: any) => {
     // console.log("emitApi response", response);
@@ -54,12 +55,14 @@ export const gotoMainPage = async (url: string) => {
 
         return await new Promise((resolve, reject) => {
 
-
-            appEvents.on(APPEVENTS.LIST_STOP, () => {
-                // console.log("list stop");
+            const listStop = () => {
+                appEvents.removeListener(APPEVENTS.LIST_STOP, listStop);
                 page.close();
                 resolve(true);
-            });
+            }
+
+            appEvents.on(APPEVENTS.LIST_STOP, listStop);
+
             const funcFunc = new Function(mainFunc);
             funcFunc.call(null).call(null, ctx, resolve, reject);
         });
@@ -117,18 +120,30 @@ export const gotoAppPage = async (job: AppJob) => {
 
         // console.log("mainFunc", mainFunc);
 
+
         return await new Promise((resolve, reject) => {
 
-            appEvents.on(APPEVENTS.APP_STOP, (jobId: string) => {
-                // console.log("app stop", jobId);
-
+            // Define the event listener function
+            const onAppStop = (jobId: string) => {
                 if (jobId === job.id) {
+                    // Clean up the event listener to avoid memory leaks
+                    appEvents.removeListener(APPEVENTS.APP_STOP, onAppStop);
+
+                    // Close the page and resolve the promise
                     page.close();
                     resolve(true);
                 }
-            });
+            };
+
+            // Attach the event listener to the APP_STOP event
+            appEvents.on(APPEVENTS.APP_STOP, onAppStop);
+
+
             const funcFunc = new Function(mainFunc);
             funcFunc.call(null).call(null, ctx, resolve, reject);
+
+
+
         });
 
     }
