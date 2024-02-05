@@ -92,7 +92,7 @@ if (require('electron-squirrel-startup')) {
 const createWindow = (): void => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    icon: path.join(__dirname, 'assets/icon.png'),
+    icon: path.join(__dirname, `assets/icon.${process.platform === "win32" ? "ico" : "png"}`),
     height: 700,
     width: 1000,
     webPreferences: {
