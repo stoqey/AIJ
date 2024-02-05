@@ -40,7 +40,10 @@ const config: ForgeConfig = {
     }
   },
   rebuildConfig: {},
-  makers: [new MakerSquirrel({}), new MakerZIP({}, ['darwin']), new MakerRpm({}),
+  makers: [new MakerSquirrel({
+    iconUrl: 'https://raw.githubusercontent.com/ceddybi/AIJ/master/src/assets/icon.png',
+    setupIcon: './src/assets/icon.ico',
+  }), new MakerZIP({}, ['darwin']), new MakerRpm({}),
   {
     "name": "@electron-forge/maker-deb",
     "config": {
