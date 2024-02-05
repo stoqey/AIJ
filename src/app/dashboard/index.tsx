@@ -1,6 +1,8 @@
-import { Bold, Button, Card, Flex, Grid, Metric, Text } from "@tremor/react";
+import { Bold, Button, Card, Flex, Grid, Metric, Text, Title } from "@tremor/react";
 import {
   CheckCircleIcon,
+  CheckIcon,
+  ForwardIcon,
   QuestionMarkCircleIcon,
   StopIcon,
 } from "@heroicons/react/20/solid";
@@ -13,6 +15,7 @@ import {
   TabPanels,
 } from "@tremor/react";
 
+import { AppJob } from "../../utils/state";
 import ApplicationsViews from "./applications.view";
 import { LayoutPageProps } from "../layout";
 import QuestionsError from "./questions.error";
@@ -21,6 +24,7 @@ import { useQuestions } from "../questions/list";
 
 export const Dashboard = ({ state }: LayoutPageProps) => {
   const {
+    activeJob,
     apps = [],
     completedApps = [],
     skippedApps = [],
@@ -53,6 +57,23 @@ export const Dashboard = ({ state }: LayoutPageProps) => {
 
   const invokeEvent = async (eventName: string, args?: any) => {
     await (window as any).api.invoke(eventName, args);
+  };
+
+  const skipJob = async (job: AppJob) => {
+    const app = (apps || []).find((ap) => ap.job.id === job.id) || {
+      job,
+      questions: [] as any,
+    };
+
+    await (window as any).api.invoke("app:skip", app);
+  };
+
+  const moveToCompleted = async (job: AppJob) => {
+    const app = (apps || []).find((ap) => ap.job.id === job.id) || {
+      job,
+      questions: [] as any,
+    };
+    await (window as any).api.invoke("app:complete", app);
   };
 
   const allEvents = [
@@ -120,28 +141,58 @@ export const Dashboard = ({ state }: LayoutPageProps) => {
             </div>
           </div>
 
-          <div className="flex justify-center">
-            <Button
-              onClick={() => invokeEvent("app:start", searchUrl)}
-              disabled={isAppRunning}
-              loading={isAppRunning}
-            >
-              {" "}
-              {!isAppRunning ? "Apply with AI" : "AI Applying ..."}{" "}
-            </Button>
+          {activeJob && (
+            <div className="flex items-center flex-col p-3 w-full overflow-hidden">
+              <div className="truncate">
+                <Title>
+                  {activeJob.title} - {activeJob.company}
+                </Title>
+              </div>
 
-            <div className="ml-2">
-              {isAppRunning && (
+              <div className="flex justify-end gap-3">
                 <Button
-                  color="red"
+                  loading={true}
+                  className="bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded"
+                ></Button>
+
+                <button
                   onClick={() => invokeEvent("app:stop", searchUrl)}
+                  className="flex items-center bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded"
                 >
-                  {" "}
-                  Stop AI{" "}
-                </Button>
-              )}
+                  <StopIcon className="h-5 w-5 text-white-400" /> Stop
+                </button>
+
+                <button
+                  onClick={() => skipJob(activeJob)}
+                  className="flex items-center bg-blue-500 hover:bg-blue-700 text-white py-1 px-2 rounded"
+                >
+                  <ForwardIcon className="h-5 w-5 text-white-400" />
+                  Skip
+                </button>
+
+                <button
+                  onClick={() => moveToCompleted(activeJob)}
+                  className="flex items-center bg-green-500 hover:bg-green-700 text-white py-1 px-2 rounded"
+                >
+                  <CheckIcon className="h-5 w-5 text-white-400" />
+                  Mark as completed
+                </button>
+              </div>
             </div>
-          </div>
+          )}
+
+          {!activeJob && (
+            <div className="flex justify-center">
+              <Button
+                onClick={() => invokeEvent("app:start", searchUrl)}
+                disabled={isAppRunning}
+                loading={isAppRunning}
+              >
+                {" "}
+                {!isAppRunning ? "Apply with AI" : "AI Applying ..."}{" "}
+              </Button>
+            </div>
+          )}
         </div>
       </Grid>
 
