@@ -44,8 +44,8 @@ const config: ForgeConfig = {
     {
       name: '@electron-forge/maker-squirrel',
       config: {
-        iconUrl: 'https://raw.githubusercontent.com/ceddybi/AIJ/master/src/assets/icon.png',
-        setupIcon: path.join(__dirname, '/src/assets/icon.png'),
+        iconUrl: 'https://raw.githubusercontent.com/ceddybi/AIJ/master/src/assets/icon.ico',
+        setupIcon: path.join(__dirname, '/src/assets/icon.ico'),
         skipUpdateIcon: true,
       }
     }, new MakerZIP({}, ['darwin']), new MakerRpm({}),
