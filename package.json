@@ -12,7 +12,8 @@
     "publish": "electron-forge publish --arch=x64 --platform",
     "lint": "eslint --ext .ts,.tsx .",
     "darwin": "yarn package && yarn make darwin && npm run publish darwin",
-    "linux": "yarn package && yarn make linux && npm run publish linux"
+    "linux": "yarn package && yarn make linux && npm run publish linux",
+    "win": "yarn package && yarn make win32 && npm run publish win32"
   },
   "keywords": [],
   "author": {
