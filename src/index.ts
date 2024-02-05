@@ -4,6 +4,7 @@ import { BrowserWindow, app, dialog, ipcMain, session, shell } from 'electron';
 import { baseURL, getAuthApi, isDev } from './api';
 import { gotoAppPage, gotoMainPage } from './config/app';
 
+import _get from 'lodash/get';
 import packageJson from '../package.json';
 import path from 'node:path';
 import { updateElectronApp } from "update-electron-app";
@@ -229,6 +230,8 @@ async function runApplying(ondemandJob?: AppJob): Promise<any> {
 }
 
 ipcMain.handle('app:skip', async (event, app: Application) => {
+  if (!app) return;
+
   const newState = await getState();
 
   if (newState.skippedApps) {
@@ -242,16 +245,25 @@ ipcMain.handle('app:skip', async (event, app: Application) => {
   newState.activeJob = null;
 
   await setState(newState);
+
+  const jobId = _get(app, "job.id", "");
+  appEvents.emit(APPEVENTS.APP_STOP, jobId);
+
   return newState;
 });
 
 ipcMain.handle('app:complete', async (event, app: Application) => {
+  if (!app) return;
   const newState = await addApplied(app.job);
   newState.skippedApps = (newState.skippedApps || []).filter((a) => a.job?.id !== app.job?.id);
   if (!(newState.completedApps || []).includes(app)) {
     newState.completedApps = [...(newState.completedApps || []), app];
   }
   await setState(newState);
+
+  const jobId = _get(app, "job.id", "");
+  appEvents.emit(APPEVENTS.APP_STOP, jobId);
+
   return newState;
 });
 
@@ -269,10 +281,11 @@ ipcMain.handle('app:start', async (event) => {
   return true;
 });
 
-ipcMain.handle('app:stop', async (event) => {
+ipcMain.handle('app:stop', async (event, app: Application) => {
   // console.log("app:stop");
+  const jobId = _get(app, "job.id", "");
   await setAppStartStop(false);
-  appEvents.emit(APPEVENTS.APP_STOP);
+  appEvents.emit(APPEVENTS.APP_STOP, jobId);
   return true;
 });
 

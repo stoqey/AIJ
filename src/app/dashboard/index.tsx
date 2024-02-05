@@ -1,4 +1,13 @@
-import { Bold, Button, Card, Flex, Grid, Metric, Text, Title } from "@tremor/react";
+import {
+  Bold,
+  Button,
+  Card,
+  Flex,
+  Grid,
+  Metric,
+  Text,
+  Title,
+} from "@tremor/react";
 import {
   CheckCircleIcon,
   CheckIcon,
@@ -24,7 +33,7 @@ import { useQuestions } from "../questions/list";
 
 export const Dashboard = ({ state }: LayoutPageProps) => {
   const {
-    activeJob,
+    // activeJob,
     apps = [],
     completedApps = [],
     skippedApps = [],
@@ -33,6 +42,7 @@ export const Dashboard = ({ state }: LayoutPageProps) => {
     jobs = [],
     applied = [],
     questions = [],
+    activeJob,
   } = state;
 
   const useQuestionState = useQuestions();
@@ -57,6 +67,15 @@ export const Dashboard = ({ state }: LayoutPageProps) => {
 
   const invokeEvent = async (eventName: string, args?: any) => {
     await (window as any).api.invoke(eventName, args);
+  };
+
+  const appStop = async (job: AppJob) => {
+    const app = (apps || []).find((ap) => ap.job.id === job.id) || {
+      job,
+      questions: [] as any,
+    };
+
+    await (window as any).api.invoke("app:stop", app);
   };
 
   const skipJob = async (job: AppJob) => {
@@ -136,27 +155,26 @@ export const Dashboard = ({ state }: LayoutPageProps) => {
         <div className="flex flex-col items-center w-full justify-center">
           <div className="flex items-center">
             <Bold>Applications</Bold>
-            <div className="p-3">
+            <div className="p-2">
               <Metric> {applied.length} </Metric>
             </div>
           </div>
 
-          {activeJob && (
-            <div className="flex items-center flex-col p-3 w-full overflow-hidden">
-              <div className="truncate">
-                <Title>
-                  {activeJob.title} - {activeJob.company}
-                </Title>
+          {(activeJob || isAppRunning) && (
+            <div className="flex items-center flex-col px-3 w-full overflow-hidden">
+              <div className="truncate border-t-4 border-l-4 border-r-4 w-full text-center">
+                <Text>{activeJob?.title}</Text>
+                <Bold>{activeJob?.company}</Bold>
               </div>
 
-              <div className="flex justify-end gap-3">
+              <div className="w-full flex justify-center gap-3 border-b-4 border-l-4 border-r-4 pb-3">
                 <Button
                   loading={true}
                   className="bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded"
                 ></Button>
 
                 <button
-                  onClick={() => invokeEvent("app:stop", searchUrl)}
+                  onClick={() => appStop(activeJob)}
                   className="flex items-center bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded"
                 >
                   <StopIcon className="h-5 w-5 text-white-400" /> Stop
@@ -181,7 +199,7 @@ export const Dashboard = ({ state }: LayoutPageProps) => {
             </div>
           )}
 
-          {!activeJob && (
+          {!activeJob && !isAppRunning && (
             <div className="flex justify-center">
               <Button
                 onClick={() => invokeEvent("app:start", searchUrl)}
