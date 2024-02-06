@@ -70,28 +70,34 @@ export const Dashboard = ({ state }: LayoutPageProps) => {
   };
 
   const appStop = async (job: AppJob) => {
-    const app = (apps || []).find((ap) => ap.job.id === job.id) || {
-      job,
-      questions: [] as any,
-    };
+    const app = job
+      ? (apps || []).find((ap) => ap?.job?.id === job?.id) || {
+          job,
+          questions: [] as any,
+        }
+      : null;
 
     await (window as any).api.invoke("app:stop", app);
   };
 
   const skipJob = async (job: AppJob) => {
-    const app = (apps || []).find((ap) => ap.job.id === job.id) || {
-      job,
-      questions: [] as any,
-    };
+    const app = job
+      ? (apps || []).find((ap) => ap.job.id === job.id) || {
+          job,
+          questions: [] as any,
+        }
+      : null;
 
     await (window as any).api.invoke("app:skip", app);
   };
 
   const moveToCompleted = async (job: AppJob) => {
-    const app = (apps || []).find((ap) => ap.job.id === job.id) || {
-      job,
-      questions: [] as any,
-    };
+    const app = job
+      ? (apps || []).find((ap) => ap.job.id === job.id) || {
+          job,
+          questions: [] as any,
+        }
+      : null;
     await (window as any).api.invoke("app:complete", app);
   };
 
