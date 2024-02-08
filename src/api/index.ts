@@ -8,7 +8,7 @@ import { isEmpty } from "lodash";
 
 export const isDev = process.env.APP_DEV ? (process.env.APP_DEV.trim() == "true") : false;
 
-export const baseURL = isDev ? "http://localhost:3001" : "https://algojobs.ca";
+export const baseURL = isDev ? "http://localhost:3001" : "https://www.algojobs.ca";
 const api = axios.create({
     baseURL,
 });
