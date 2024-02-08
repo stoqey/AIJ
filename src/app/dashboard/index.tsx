@@ -224,13 +224,13 @@ export const Dashboard = ({ state }: LayoutPageProps) => {
         <TabGroup>
           <TabList className="mt-8">
             <Tab icon={QuestionMarkCircleIcon}>
-              Questions: error {errorQuestions.length && errorQuestions.length}
+              Error {errorQuestions.length && errorQuestions.length}
             </Tab>
             <Tab icon={StopIcon}>
-              Applications: skipped {skippedApps.length && skippedApps.length}
+              Skipped {skippedApps.length && skippedApps.length}
             </Tab>
             <Tab icon={CheckCircleIcon}>
-              Applications: completed{" "}
+              Completed{" "}
               {completedApps.length && completedApps.length}
             </Tab>
           </TabList>
