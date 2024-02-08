@@ -232,10 +232,11 @@ async function runApplying(ondemandJob?: AppJob): Promise<any> {
 ipcMain.handle('app:skip', async (event, app: Application) => {
   if (!app) return;
 
+  const jobId = _get(app, "job.id", "");
   const newState = await getState();
 
   if (newState.skippedApps) {
-    if (newState.skippedApps.some((a) => a.job?.id === app.job?.id)) {
+    if (newState.skippedApps.some((a) => a.job?.id === jobId)) {
       return;
     }
     newState.skippedApps.push(app);
@@ -244,9 +245,12 @@ ipcMain.handle('app:skip', async (event, app: Application) => {
   }
   newState.activeJob = null;
 
+  if (newState.jobs) {
+    newState.jobs = newState.jobs.filter((j) => j.id !== jobId);
+  }
+
   await setState(newState);
 
-  const jobId = _get(app, "job.id", "");
   appEvents.emit(APPEVENTS.APP_STOP, jobId);
 
   return newState;
