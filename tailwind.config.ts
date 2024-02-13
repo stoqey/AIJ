@@ -3,6 +3,7 @@ import type { Config } from 'tailwindcss';
 export default {
   content: [
     './src/renderer/**/*.{js,jsx,ts,tsx}',
+    './src/app/**/*.{js,jsx,ts,tsx}',
     './node_modules/@tremor/**/*.{js,ts,jsx,tsx,mdx}'
   ],
   theme: {

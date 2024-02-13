@@ -13,6 +13,7 @@ import {
   SearchSelectItem,
   Select,
   SelectItem,
+  TextInput,
   Textarea,
   Title,
 } from "@tremor/react";
@@ -137,6 +138,7 @@ export const RenderQuestion = ({
             )}
           </div>
           <SearchSelect
+            className="w-full text-xl"
             value={questionAnswerText}
             onChange={(e: any) => {
               const value = e;
@@ -157,8 +159,9 @@ export const RenderQuestion = ({
         </div>
       );
 
-    default:
     case "text":
+    default:
+      const isNumber = questionInputTypeValue === "number";
       return (
         <>
           <div>
@@ -169,19 +172,35 @@ export const RenderQuestion = ({
               </div>
             )}
           </div>
-          <Textarea
-            className="w-full text-xl"
-            rows={15}
-            value={questionAnswerText}
-            onChange={(e) => {
-              const answer = {
-                inputId: question.question.inputId,
-                inputType: question.question.inputType,
-                answerText: e.target.value,
-              };
-              handleChangeAnswer(answer);
-            }}
-          />
+          {isNumber ? (
+            <TextInput
+              className="w-full text-xl"
+              type={"number" as any}
+              value={questionAnswerText}
+              onChange={(e) => {
+                const answer = {
+                  inputId: question.question.inputId,
+                  inputType: question.question.inputType,
+                  answerText: e.target.value,
+                };
+                handleChangeAnswer(answer);
+              }}
+            />
+          ) : (
+            <Textarea
+              className="w-full text-xl"
+              rows={5}
+              value={questionAnswerText}
+              onChange={(e) => {
+                const answer = {
+                  inputId: question.question.inputId,
+                  inputType: question.question.inputType,
+                  answerText: e.target.value,
+                };
+                handleChangeAnswer(answer);
+              }}
+            />
+          )}
         </>
       );
   }
@@ -539,105 +558,84 @@ export const ListQuestions = () => {
   const filteredQuestions = getFilteredQuestions();
 
   return (
-    <Card className="max-w-xl">
-      <div>
-        <Title>Questions {questions.length}</Title>
-        <Grid numItems={1} numItemsSm={2} numItemsLg={3} className="gap-3">
-          <Col className="border border-solid">
-            <div className="flex rounded-md shadow-sm mb-2 relative">
-              <input
-                value={search}
-                name="search"
-                id="search"
-                //   disabled={disabled}
-                className="h-10 block w-full rounded-md border border-gray-200 pl-9 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                placeholder=" Search by name..."
-                spellCheck={false}
-                onChange={(e) => handleSearch(e.target.value)}
-              />
+    <Card className="w-full">
+      <Title>Questions {questions.length}</Title>
+      <div className="flex flex-row">
+        <div className="flex mt-3 flex-col" style={{ width: "50%" }}>
+          <div className="flex rounded-md shadow-sm mb-2 relative">
+            <input
+              value={search}
+              name="search"
+              id="search"
+              //   disabled={disabled}
+              className="h-10 block w-full rounded-md border border-gray-200 pl-9 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              placeholder=" Search by name..."
+              spellCheck={false}
+              onChange={(e) => handleSearch(e.target.value)}
+            />
 
-              {!isEmpty(search) && (
-                <div
-                  className="absolute right-1 top-0 bottom-0 flex items-center justify-center cursor-pointer"
-                  onClick={() => clearSearch()}
+            {!isEmpty(search) && (
+              <div
+                className="absolute right-1 top-0 bottom-0 flex items-center justify-center cursor-pointer"
+                onClick={() => clearSearch()}
+              >
+                <MinusCircleIcon className="h-5 w-5 text-gray-400" />
+              </div>
+            )}
+          </div>
+
+          <List
+            style={{
+              height: "80vh",
+              overflowY: "scroll",
+            }}
+          >
+            {filteredQuestions.map((item) => {
+              const selectedQuesId = _get(selectedQuestion, "question.inputId");
+              const currentQuesId = _get(item, "question.inputId");
+              const isSelected = selectedQuesId === currentQuesId;
+              return (
+                <ListItem
+                  onClick={() => setSelectedQuestion(item as QuestionAnswer)}
+                  key={item.question.inputId}
+                  className={` hover:bg-gray-100 cursor-pointer px-2 ${
+                    isSelected ? "bg-gray-200" : ""
+                  }`}
                 >
-                  <MinusCircleIcon className="h-5 w-5 text-gray-400" />
-                </div>
-              )}
+                  <Title className="truncate">{item.question.question}</Title>
+                  {item.isNew && <Badge>New</Badge>}
+                </ListItem>
+              );
+            })}
+          </List>
+        </div>
+
+        {selectedQuestion && (
+          <div
+            style={{ height: "70vh", width: "50%" }}
+            className="flex flex-col overflow-x-scroll p-2"
+          >
+            <div style={{ marginBottom: "20px" }}>
+              <Metric>{selectedQuestion.question.question}</Metric>
             </div>
 
-            <List
-              style={{
-                height: "80vh",
-                overflowY: "scroll",
-              }}
-            >
-              {filteredQuestions.map((item) => {
-                const selectedQuesId = _get(
-                  selectedQuestion,
-                  "question.inputId"
-                );
-                const currentQuesId = _get(item, "question.inputId");
-                const isSelected = selectedQuesId === currentQuesId;
-                return (
-                  <ListItem
-                    onClick={() => setSelectedQuestion(item as QuestionAnswer)}
-                    key={item.question.inputId}
-                    className={` hover:bg-gray-100 cursor-pointer px-2 ${
-                      isSelected ? "bg-gray-200" : ""
-                    }`}
-                  >
-                    <Title className="truncate">{item.question.question}</Title>
-                    {item.isNew && <Badge>New</Badge>}
-                  </ListItem>
-                );
-              })}
-            </List>
-          </Col>
+            <div>
+              <RenderQuestion
+                question={selectedQuestion}
+                handleChangeAnswer={handleChangeAnswer}
+              />
+            </div>
 
-          {selectedQuestion && (
-            <Col numColSpan={1} numColSpanLg={2}>
-              <div className="">
-                <div style={{ marginBottom: "20px" }}>
-                  <Metric>{selectedQuestion.question.question}</Metric>
-                </div>
-
-                <div>
-                  <RenderQuestion
-                    question={selectedQuestion}
-                    handleChangeAnswer={handleChangeAnswer}
-                  />
-                </div>
-
-                <div className="flex justify-center mt-2">
-                  <button
-                    onClick={handleSaveQuestion}
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                  >
-                    Save
-                  </button>
-                </div>
-              </div>
-            </Col>
-          )}
-
-          {/* <Col>
-            <Card>
-              <Text>Title</Text>
-              <Metric>KPI 3</Metric>
-            </Card>
-          </Col>
-
-          <Card>
-            <Text>Title</Text>
-            <Metric>KPI 4</Metric>
-          </Card>
-
-          <Card>
-            <Text>Title</Text>
-            <Metric>KPI 5</Metric>
-          </Card> */}
-        </Grid>
+            <div className="flex justify-center mt-2">
+              <button
+                onClick={handleSaveQuestion}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </Card>
   );
