@@ -1,7 +1,8 @@
 import { List, ListItem, Metric, Title } from "@tremor/react";
-import { RenderQuestion, UseQuestions } from "../questions/list";
 
 import { QuestionAnswer } from "../questions/interfaces";
+import { RenderQuestion } from "../questions/question";
+import { UseQuestions } from "../questions/list";
 import { isEmpty } from "lodash";
 
 export const QuestionsError = (props: UseQuestions) => {

@@ -2,51 +2,10 @@ import { Answer, QuestionAnswer } from "../questions/interfaces";
 import { Application, BEState } from "../../utils/state";
 import { List, ListItem, Metric, Title } from "@tremor/react";
 import React, { useEffect, useLayoutEffect } from "react";
-import { RenderQuestion, UseQuestions, useQuestions } from "../questions/list";
+import { UseQuestions, useQuestions } from "../questions/list";
 import { isEmpty, uniqBy } from "lodash";
 
-interface RenderEditQuestionProps extends UseQuestions {
-  question: QuestionAnswer;
-}
-
-export const RenderEditQuestion = (props: RenderEditQuestionProps) => {
-  const {
-    questions: savedQuestions,
-    handleChangeAnswer,
-    handleSaveQuestion,
-    setSelectedQuestion,
-    selectedQuestion,
-  } = useQuestions();
-
-  const question = selectedQuestion;
-
-  useEffect(() => {
-    // console.log("savedQuestions.length", savedQuestions.length);
-    const selectedSavedQuestion = savedQuestions.find(
-      (q) => q?.question?.question === props?.question?.question?.question
-    );
-
-    if (!question && selectedSavedQuestion) {
-      // console.log("selectedSavedQuestion", selectedSavedQuestion);
-      setSelectedQuestion(selectedSavedQuestion);
-    }
-  }, [props?.question, savedQuestions]);
-
-  if (!question || !question?.question) return null;
-
-  return (
-    <div className="flex mt-3 flex-col">
-      <div style={{ marginBottom: "20px" }}>
-        <Title>{question.question.question}</Title>
-      </div>
-
-      <RenderQuestion
-        question={question}
-        handleChangeAnswer={handleChangeAnswer}
-      />
-    </div>
-  );
-};
+import { RenderEditQuestion } from "../questions/question";
 
 interface ApplicationsViewProps {
   skipped?: boolean;

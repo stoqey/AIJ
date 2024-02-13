@@ -1,6 +1,6 @@
 import { AppJob, BEState } from "./state.interfaces";
 import { Question, QuestionAnswer } from "../../app/questions/interfaces";
-import { isEmpty, uniqBy } from "lodash";
+import { compact, isEmpty, uniqBy } from "lodash";
 
 import fs from "fs";
 import packageJson from '../../../package.json';
@@ -123,8 +123,8 @@ export const addJob = async (job: AppJob | AppJob[]): Promise<boolean> => {
 };
 
 
-function getReadableId(question: string) {
-    return question.replace(/[^a-zA-Z0-9]/g, "-").toLowerCase().substring(0, 200);
+export function getReadableId(question: string) {
+    return (question || "").replace(/\s+/g, ' ').trim().replace(/[^a-zA-Z0-9]/g, "-").toLowerCase().substring(0, 200);
 };
 
 
@@ -154,12 +154,23 @@ export async function getAllQuestion(): Promise<QuestionAnswer[]> {
         const files = fs.readdirSync(questionDirPath);
         const questions = files.map((file) => {
             const questionFile = path.join(questionDirPath, file);
-            const questionDataString = fs.readFileSync(questionFile);
-            const questionData = JSON.parse(questionDataString.toString());
-            return questionData as QuestionAnswer;
+            const questionDataString = fs.readFileSync(questionFile, { encoding: "utf-8" });
+
+            const questionJson: QuestionAnswer = JSON.parse(questionDataString);
+
+            // TODO remove after update
+            let chainResTextAsJson;
+            try {
+                chainResTextAsJson = JSON.parse(questionJson.chainRes.text);
+                if (questionJson.chainRes) {
+                    questionJson.chainRes.json = chainResTextAsJson;
+                }
+            } catch (error) { }
+
+            return questionJson;
         });
 
-        return questions;
+        return compact(questions);
     }
     catch (error) {
         return null;
@@ -173,7 +184,7 @@ export async function saveQuestion(questionAnswer: QuestionAnswer): Promise<bool
 
         const questionReadableId = getReadableId(questionAnswer.question.question);
 
-        // console.log("saveQuestion", questionReadableId);
+        console.log("saveQuestion", { questionReadableId, questionAnswer });
 
         const questionFile = `${questionReadableId}.json`;
         // Create appDataDir if not exist
@@ -184,7 +195,7 @@ export async function saveQuestion(questionAnswer: QuestionAnswer): Promise<bool
         const questionFilDestination = path.join(questionDirPath, questionFile);
         const state = JSON.stringify(questionAnswer, null, 2);
 
-        fs.writeFileSync(questionFilDestination, state);
+        fs.writeFileSync(questionFilDestination, state, { encoding: "utf-8" });
         return true;
     }
     catch (error) {
