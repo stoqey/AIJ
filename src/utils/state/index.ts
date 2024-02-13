@@ -86,8 +86,29 @@ export const addApplied = async (job: AppJob) => {
 
 export const addJob = async (job: AppJob | AppJob[]): Promise<boolean> => {
 
+
     try {
         const state = await getState();
+
+        const jobsExist = () => {
+
+            const currentJobs = Array.isArray(job) ? job : [job];
+            const currentJobsIds = currentJobs.map(j => j.id);
+
+            const applied = state.applied || [];
+            const jobs = state.jobs || [];
+            const completedApps = state.completedApps || [];
+            const skippedApps = state.skippedApps || [];
+
+            const allJobs = [...applied, ...jobs, ...(completedApps.map(c => c.job)), ...(skippedApps).map(c => c.job)];
+
+            return allJobs.some((j) => currentJobsIds.includes(j.id));
+        };
+
+        if (jobsExist()) {
+            return false;
+        }
+
         const newJobs = uniqBy([...(state.jobs || []), ...(Array.isArray(job) ? job : [job])], "id")
         const newState = { ...state, jobs: newJobs };
         await setState(newState);
@@ -150,7 +171,11 @@ export async function saveQuestion(questionAnswer: QuestionAnswer): Promise<bool
         const appDataDirPath = getAppDataPath();
         const questionDirPath = path.join(appDataDirPath, "questions");
 
-        const questionFile = `${getReadableId(questionAnswer.question.question)}.json`;
+        const questionReadableId = getReadableId(questionAnswer.question.question);
+
+        // console.log("saveQuestion", questionReadableId);
+
+        const questionFile = `${questionReadableId}.json`;
         // Create appDataDir if not exist
         if (!fs.existsSync(questionDirPath)) {
             fs.mkdirSync(questionDirPath, { recursive: true });

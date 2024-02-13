@@ -13,7 +13,7 @@ export interface Question {
     question: string;
     inputId: string;
     inputType: "input" | "text" | "radio" | "checkbox" | "select" | "textarea" | "fieldset";
-    inputOptions?: InputOption;
+    inputOptions?: InputOption[];
     inputTypeValue?: string;
     answers?: Answer[];
 }

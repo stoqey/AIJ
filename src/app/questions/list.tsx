@@ -1,4 +1,4 @@
-import { Answer, QuestionAnswer } from "./interfaces";
+import { Answer, InputOption, QuestionAnswer } from "./interfaces";
 import {
   Badge,
   Card,
@@ -7,6 +7,12 @@ import {
   List,
   ListItem,
   Metric,
+  MultiSelect,
+  MultiSelectItem,
+  SearchSelect,
+  SearchSelectItem,
+  Select,
+  SelectItem,
   Textarea,
   Title,
 } from "@tremor/react";
@@ -116,6 +122,41 @@ export const RenderQuestion = ({
           </List>
         </div>
       );
+
+    case "select":
+      const questionInputOptions: InputOption[] =
+        question?.question?.inputOptions || [];
+
+      console.log("questionInputOptions", questionInputOptions);
+
+      return (
+        <div>
+          <div>
+            {questionAnswerError && (
+              <div className="text-red-500">Please select an answer</div>
+            )}
+          </div>
+          <SearchSelect
+            value={questionAnswerText}
+            onChange={(e: any) => {
+              const value = e;
+              const answer = {
+                inputId: question.question.inputId,
+                inputType: question.question.inputType,
+                answerText: value,
+              };
+              handleChangeAnswer(answer);
+            }}
+          >
+            {questionInputOptions.map((option) => (
+              <SearchSelectItem key={option?.value} value={option.value}>
+                {option.label || (option as any).text}
+              </SearchSelectItem>
+            ))}
+          </SearchSelect>
+        </div>
+      );
+
     default:
     case "text":
       return (
@@ -217,7 +258,6 @@ export const useQuestions = (): UseQuestions => {
         selectedQuestion: question,
       });
     }
-    
   };
 
   const setSelectedQuestion = async (question: QuestionAnswer) => {

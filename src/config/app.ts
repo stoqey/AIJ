@@ -34,6 +34,8 @@ export const gotoMainPage = async (url: string) => {
         const page = await browser.newPage();
 
         const ctx = {
+            getState,
+            setState,
             speedApply,
             speedJobs,
             emitApi,
