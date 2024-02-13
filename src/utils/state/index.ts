@@ -184,7 +184,7 @@ export async function saveQuestion(questionAnswer: QuestionAnswer): Promise<bool
 
         const questionReadableId = getReadableId(questionAnswer.question.question);
 
-        console.log("saveQuestion", { questionReadableId, questionAnswer });
+        // console.log("saveQuestion", { questionReadableId, questionAnswer });
 
         const questionFile = `${questionReadableId}.json`;
         // Create appDataDir if not exist

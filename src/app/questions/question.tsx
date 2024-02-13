@@ -146,6 +146,10 @@ export const RenderQuestion = ({
 
       // console.log("questionInputOptions", questionInputOptions);
 
+      const selectQuesTextAnswer = questionAnswerText
+        .replace('"', "")
+        .replace('"', "");
+        
       return (
         <div>
           <div>
@@ -155,7 +159,7 @@ export const RenderQuestion = ({
           </div>
           <SearchSelect
             className="w-full text-xl"
-            value={questionAnswerText}
+            value={selectQuesTextAnswer}
             onChange={(e: any) => {
               const value = e;
               const answer = {

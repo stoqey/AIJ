@@ -36,7 +36,7 @@ export interface UseQuestions {
   selectedQuestion?: QuestionAnswer;
   questions: QuestionAnswer[];
   handleChangeAnswer: (answer: Answer) => void;
-  handleSaveQuestion: () => void;
+  handleSaveQuestion: (question: QuestionAnswer) => void;
   clearSearch: () => void;
   handleSearch: (search: string) => void;
   setSelectedQuestion: (question: QuestionAnswer) => void;
@@ -77,39 +77,26 @@ export const useQuestions = (): UseQuestions => {
     return sortBy(filteredQuestions, "date");
   };
 
-  const readQuestion = async (question: QuestionAnswer) => {
-    // console.log("read question", question);
-
-    const savedRead = await (window as any).api.invoke(
-      "questions:read",
-      question
-    );
-
-    // console.log("savedRead", savedRead);
-
-    if (savedRead) {
-      // update FE
-      const allquestions = questions.map((item) => {
-        if (item.question.inputId === question.question.inputId) {
-          return { ...question, isNew: false };
+  const setSelectedQuestion = (question: QuestionAnswer) => {
+    setState({
+      ...state,
+      selectedQuestion: question,
+      questions: questions.map((item) => {
+        if (item?.question?.inputId === question?.question?.inputId) {
+          return question;
         }
         return item;
-      });
-
-      setState({
-        ...state,
-        questions: allquestions,
-        selectedQuestion: question,
-      });
-    }
-  };
-
-  const setSelectedQuestion = async (question: QuestionAnswer) => {
-    await readQuestion(question);
+      }),
+    });
+    handleSaveQuestion(question);
   };
 
   const setSelectedAnswerText = (answer: string) => {
-    const selQuestion = { ...selectedQuestion, chainRes: { text: answer } };
+    const selQuestion = {
+      ...selectedQuestion,
+      chainRes: { text: answer },
+      isNew: false,
+    };
     setSelectedQuestion(selQuestion);
   };
 
@@ -216,11 +203,11 @@ export const useQuestions = (): UseQuestions => {
     getAllQuestions();
   }, []);
 
-  const handleSaveQuestion = async () => {
+  const handleSaveQuestion = async (selQuestion: QuestionAnswer) => {
     const questToSave: QuestionAnswer = {
-      ...selectedQuestion,
+      ...selQuestion,
       chainRes: {
-        ...selectedQuestion.chainRes,
+        ...selQuestion.chainRes,
         error: false,
       },
       isNew: false,
@@ -231,14 +218,14 @@ export const useQuestions = (): UseQuestions => {
       questToSave
     );
 
-    const allquestions = questions.map((item) => {
-      if (item.question.inputId === selectedQuestion.question.inputId) {
-        return questToSave;
-      }
-      return item;
-    });
+    // const allquestions = questions.map((item) => {
+    //   if (item.question.inputId === selectedQuestion.question.inputId) {
+    //     return questToSave;
+    //   }
+    //   return item;
+    // });
 
-    setState({ ...state, questions: allquestions });
+    // setState({ ...state, questions: allquestions });
 
     // await getAllQuestions();
     return saveQuestion;
@@ -248,7 +235,6 @@ export const useQuestions = (): UseQuestions => {
 
   return {
     search,
-    readQuestion,
     handleSearch,
     clearSearch,
     selectedQuestion,
@@ -264,7 +250,6 @@ export const useQuestions = (): UseQuestions => {
 export const ListQuestions = () => {
   const {
     handleSaveQuestion,
-    readQuestion,
     getFilteredQuestions,
     selectedQuestion = null,
     questions = [],
@@ -353,7 +338,7 @@ export const ListQuestions = () => {
 
             <div className="flex justify-center mt-2">
               <button
-                onClick={handleSaveQuestion}
+                onClick={() => handleSaveQuestion(selectedQuestion)}
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
               >
                 Save

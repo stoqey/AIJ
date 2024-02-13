@@ -69,7 +69,7 @@ export const ApplicationsViews = (props: ApplicationsViewProps) => {
 
           {selectedApp && (
             <div
-              style={{ height: "70vh" }}
+              style={{ height: "70vh", width: "50%" }}
               className="flex flex-col overflow-x-scroll"
             >
               <div style={{ marginBottom: "20px" }}>
