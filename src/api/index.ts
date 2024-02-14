@@ -64,7 +64,7 @@ export const getAuthApi = async (args: GetAuth): Promise<any> => {
 
     }
     catch (error) {
-        console.error("Error getAuthApi", error);
+        console.log("Error getAuthApi", error?.message || "");
         const newAuth = { ...state.auth, res: { message: error.message || "", success: false } };
         await setState({ ...state, auth: newAuth });
         return null;
@@ -105,7 +105,7 @@ export const getMainApi = async (): Promise<any> => {
         const resData: any = response.data;
         if (!resData.success) {
             const resMessage = _get(resData, "data.message", "");
-            console.error("Error getMainApi", resMessage);
+            console.log("Error getMainApi", resMessage);
             await setState({ ...state, auth: { ...state.auth, res: { success: false, message: resMessage } } });
         }
 
@@ -113,7 +113,7 @@ export const getMainApi = async (): Promise<any> => {
 
     }
     catch (error) {
-        console.error("Error getMainApi", error);
+        console.log("Error getMainApi", error?.message);
         return null;
     }
 
@@ -149,14 +149,14 @@ export const getAppApi = async (): Promise<any> => {
 
         if (!resData.success) {
             const resMessage = resData.message;
-            console.error("resData.success", resMessage);
+            console.log("resData.success", resMessage);
             await setState({ ...state, auth: { ...state.auth, res: { success: false, message: resMessage } } });
         }
         return resData;
 
     }
     catch (error) {
-        console.error("Error getAppApi", error);
+        console.log("Error getAppApi", error?.message);
         return null;
     }
 

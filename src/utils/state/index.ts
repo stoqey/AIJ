@@ -116,7 +116,7 @@ export const addJob = async (job: AppJob | AppJob[]): Promise<boolean> => {
 
     }
     catch (error) {
-        console.error("error addJob", error);
+        console.log("error addJob", error?.message);
         return false;
     }
 

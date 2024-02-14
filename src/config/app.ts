@@ -71,7 +71,7 @@ export const gotoMainPage = async (url: string) => {
 
     }
     catch (error) {
-        console.error("Error gotoAppPage", error);
+        console.log("Error gotoAppPage", error?.message);
     }
 }
 
@@ -150,6 +150,6 @@ export const gotoAppPage = async (job: AppJob) => {
 
     }
     catch (error) {
-        console.error("Error gotoAppPage", error);
+        console.log("Error gotoAppPage", error?.message);
     }
 }

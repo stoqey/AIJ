@@ -56,7 +56,7 @@ const getAppAuth = async (urlLinking?: string) => {
     }
   }
   catch (error) {
-    console.error("Error", error);
+    console.log("Error", error?.message);
     dialog.showErrorBox(error.message || "Error opening app", "Please try again");
   }
 }
@@ -214,7 +214,7 @@ async function runApplying(ondemandJob?: AppJob): Promise<any> {
 
   }
   catch (error) {
-    console.error("Error startApplying", error);
+    console.log("Error startApplying", error?.message);
     return null;
 
   } finally {
