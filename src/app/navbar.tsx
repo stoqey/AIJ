@@ -14,9 +14,14 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Navbar({ user }: { user: any }) {
-  const pathname = "";
-
+export default function Navbar({
+  user,
+  ...props
+}: {
+  user: any;
+  pathname: string;
+}) {
+  const pathname = props.pathname.replace("#", "");
   const signOut = () => {
     // console.log("sign out");
   };
@@ -56,15 +61,24 @@ export default function Navbar({ user }: { user: any }) {
                   </svg>
                 </div> */}
                 <div className="-my-px ml-6 flex space-x-8">
+                  <img
+                    src={"static://assets/icon.png"}
+                    style={{
+                      height: "45px",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignSelf: "center",
+                    }}
+                  />
                   {navigation.map((item) => (
                     <a
                       key={item.name}
                       href={`#${item.href}`}
                       className={classNames(
                         pathname === item.href
-                          ? "border-slate-500 text-gray-900"
+                          ? "border-blue-500 text-blue-600"
                           : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300",
-                        "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                        "inline-flex items-center px-1 pt-1 border-b-2 text-xl font-medium"
                       )}
                       aria-current={pathname === item.href ? "page" : undefined}
                     >
@@ -73,18 +87,19 @@ export default function Navbar({ user }: { user: any }) {
                   ))}
                 </div>
               </div>
-              <div className="hidden sm:ml-6 sm:flex sm:items-center">
+
+              {/* <div className="hidden sm:ml-6 sm:flex sm:items-center">
                 <Menu as="div" className="relative ml-3">
                   <div>
                     <Menu.Button className="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
                       <span className="sr-only">Open user menu</span>
-                      {/* <Image
+                      <Image
                         className="h-8 w-8 rounded-full"
                         src={user?.image || 'https://avatar.vercel.sh/leerob'}
                         height={32}
                         width={32}
                         alt={`${user?.name || 'placeholder'} avatar`}
-                      /> */}
+                      />
                     </Menu.Button>
                   </div>
                   <Transition
@@ -139,11 +154,11 @@ export default function Navbar({ user }: { user: any }) {
                     <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
                   )}
                 </Disclosure.Button>
-              </div>
+              </div> */}
             </div>
           </div>
 
-          <Disclosure.Panel className="sm:hidden">
+          {/* <Disclosure.Panel className="sm:hidden">
             <div className="space-y-1 pt-2 pb-3">
               {navigation.map((item) => (
                 <Disclosure.Button
@@ -167,13 +182,13 @@ export default function Navbar({ user }: { user: any }) {
                 <>
                   <div className="flex items-center px-4">
                     <div className="flex-shrink-0">
-                      {/* <Image
+                      <Image
                         className="h-8 w-8 rounded-full"
                         src={user.image}
                         height={32}
                         width={32}
                         alt={`${user.name} avatar`}
-                      /> */}
+                      />
                     </div>
                     <div className="ml-3">
                       <div className="text-base font-medium text-gray-800">
@@ -204,7 +219,7 @@ export default function Navbar({ user }: { user: any }) {
                 </div>
               )}
             </div>
-          </Disclosure.Panel>
+          </Disclosure.Panel> */}
         </>
       )}
     </Disclosure>

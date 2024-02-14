@@ -156,23 +156,27 @@ export async function getAllQuestion(): Promise<QuestionAnswer[]> {
             const questionFile = path.join(questionDirPath, file);
             const questionDataString = fs.readFileSync(questionFile, { encoding: "utf-8" });
 
-            const questionJson: QuestionAnswer = JSON.parse(questionDataString);
-
+            let questionJson: QuestionAnswer;
             // TODO remove after update
             let chainResTextAsJson;
             try {
+                questionJson = JSON.parse(questionDataString);
                 chainResTextAsJson = JSON.parse(questionJson.chainRes.text);
-                if (questionJson.chainRes) {
+                if (questionJson?.chainRes) {
                     questionJson.chainRes.json = chainResTextAsJson;
                 }
-            } catch (error) { }
-
-            return questionJson;
+                return questionJson;
+            } catch (error) {
+                // console.log("error questions.map", { message: error?.message, questionDataString, questionJson });
+            } finally {
+                return questionJson;
+            }
         });
 
         return compact(questions);
     }
     catch (error) {
+        console.log("error getAllQuestion", error?.message);
         return null;
     }
 };

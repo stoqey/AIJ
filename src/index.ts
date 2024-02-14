@@ -307,6 +307,7 @@ ipcMain.handle('questions:read', async (event, question) => {
 
 ipcMain.handle('questions:getall', async (event) => {
   const questions = await getAllQuestion();
+  // console.log("questions:getall", questions.length);
   return questions;
 });
 
