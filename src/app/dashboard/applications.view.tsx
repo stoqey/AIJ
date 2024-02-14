@@ -38,6 +38,10 @@ export const ApplicationsViews = (props: ApplicationsViewProps) => {
 
           {/* Apps */}
           <div className="flex mt-3 flex-col" style={{ width: "50%" }}>
+            <Title>
+              {" "}
+              {skipped ? "Skipped" : "Completed"} applications {apps.length}{" "}
+            </Title>
             <List
               style={{
                 height: "80vh",

@@ -1,34 +1,32 @@
-import { List, ListItem, Metric, Title } from "@tremor/react";
+import { Badge, List, ListItem, Metric, Title } from "@tremor/react";
 
 import { QuestionAnswer } from "../questions/interfaces";
 import { RenderQuestion } from "../questions/question";
 import { UseQuestions } from "../questions/list";
-import { isEmpty } from "lodash";
 
-export const QuestionsError = (props: UseQuestions) => {
+export const QuestionsNew = (props: UseQuestions) => {
   const {
     questions: savedQuestions,
     selectedQuestion,
     setSelectedQuestion,
     handleChangeAnswer,
-    handleSaveQuestion,
   } = props;
 
-  const errorQuestions = savedQuestions.filter((q) => !!q.chainRes.error);
+  const newQuestions = savedQuestions.filter((q) => q.isNew);
 
   return (
     <>
-      {errorQuestions.length > 0 && (
+      {newQuestions.length > 0 && (
         <div className="flex flex-row">
           <div className="flex mt-3 flex-col" style={{ width: "50%" }}>
-            <Title> Error questions {errorQuestions.length} </Title>
+            <Title> New questions {newQuestions.length} </Title>
             <List
               style={{
                 height: "80vh",
                 overflowY: "scroll",
               }}
             >
-              {errorQuestions.map((item, index) => (
+              {newQuestions.map((item, index) => (
                 <div className="flex flex-col" key={item.question.inputId}>
                   <ListItem
                     onClick={() => setSelectedQuestion(item as QuestionAnswer)}
@@ -38,14 +36,8 @@ export const QuestionsError = (props: UseQuestions) => {
                     <Title className="truncate">
                       {index + 1} {item.question.question}
                     </Title>
-                    {/* {item.isNew && <Badge>New</Badge>} */}
+                    {item.isNew && <Badge>New</Badge>}
                   </ListItem>
-
-                  <div className="flex justify-start text-red-500 px-4">
-                    {isEmpty(item.chainRes.text) || item.chainRes.text === "."
-                      ? "Error with question"
-                      : item.chainRes.text}
-                  </div>
                 </div>
               ))}
             </List>
@@ -69,4 +61,4 @@ export const QuestionsError = (props: UseQuestions) => {
   );
 };
 
-export default QuestionsError;
+export default QuestionsNew;

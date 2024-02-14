@@ -13,6 +13,7 @@ import {
   CheckIcon,
   ForwardIcon,
   QuestionMarkCircleIcon,
+  SparklesIcon,
   StopIcon,
 } from "@heroicons/react/20/solid";
 import {
@@ -28,6 +29,7 @@ import { AppJob } from "../../utils/state";
 import ApplicationsViews from "./applications.view";
 import { LayoutPageProps } from "../layout";
 import QuestionsError from "./questions.error";
+import QuestionsNew from "./questions.new";
 import React from "react";
 import { useQuestions } from "../questions/list";
 
@@ -56,6 +58,7 @@ export const Dashboard = ({ state }: LayoutPageProps) => {
   } = useQuestionState;
 
   const errorQuestions = savedQuestions.filter((q) => !!q.chainRes.error) || [];
+  const newQuestions = savedQuestions.filter((q) => q.isNew) || [];
 
   const searchUrl = "https://ca.indeed.com/jobs?q=";
 
@@ -223,18 +226,23 @@ export const Dashboard = ({ state }: LayoutPageProps) => {
       <div style={{ marginTop: "20px" }}>
         <TabGroup>
           <TabList className="mt-8">
+            <Tab icon={SparklesIcon}>
+              New {newQuestions.length && newQuestions.length}
+            </Tab>
             <Tab icon={QuestionMarkCircleIcon}>
               Error {errorQuestions.length && errorQuestions.length}
             </Tab>
-            <Tab icon={StopIcon}>
+            <Tab icon={() => <ForwardIcon className="h-5 w-5 text-white-400" />}>
               Skipped {skippedApps.length && skippedApps.length}
             </Tab>
             <Tab icon={CheckCircleIcon}>
-              Completed{" "}
-              {completedApps.length && completedApps.length}
+              Completed {completedApps.length && completedApps.length}
             </Tab>
           </TabList>
           <TabPanels>
+            <TabPanel>
+              <QuestionsNew {...useQuestionState} />
+            </TabPanel>
             <TabPanel>
               <QuestionsError {...useQuestionState} />
             </TabPanel>
