@@ -52,7 +52,7 @@ export const QuestionsError = (props: UseQuestions) => {
           </div>
 
           {selectedQuestion && (
-            <div className="flex mt-3 flex-col" style={{ width: "50%" }}>
+            <div className="flex mt-3 flex-col p-2" style={{ width: "50%" }}>
               <div style={{ marginBottom: "20px" }}>
                 <Metric>{selectedQuestion.question.question}</Metric>
               </div>
@@ -61,14 +61,14 @@ export const QuestionsError = (props: UseQuestions) => {
                 question={selectedQuestion}
                 handleChangeAnswer={handleChangeAnswer}
               />
-              <div className="flex justify-center mt-2">
+              {/* <div className="flex justify-center mt-2">
                 <button
                   onClick={handleSaveQuestion}
                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                 >
                   Save
                 </button>
-              </div>
+              </div> */}
             </div>
           )}
         </div>

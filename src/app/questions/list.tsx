@@ -42,7 +42,7 @@ export interface UseQuestions {
   setSelectedQuestion: (question: QuestionAnswer) => void;
 
   getAllQuestions: () => Promise<QuestionAnswer[]>;
-  readQuestion: (question: QuestionAnswer) => Promise<void>;
+  // readQuestion: (question: QuestionAnswer) => Promise<void>;
   getFilteredQuestions: () => QuestionAnswer[];
 }
 
@@ -336,14 +336,14 @@ export const ListQuestions = () => {
               />
             </div>
 
-            <div className="flex justify-center mt-2">
+            {/* <div className="flex justify-center mt-2">
               <button
                 onClick={() => handleSaveQuestion(selectedQuestion)}
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
               >
                 Save
               </button>
-            </div>
+            </div> */}
           </div>
         )}
       </div>

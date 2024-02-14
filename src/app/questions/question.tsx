@@ -1,3 +1,5 @@
+import "./style.css";
+
 import { Answer, InputOption, QuestionAnswer } from "./interfaces";
 import {
   List,
@@ -59,7 +61,7 @@ const RenderCheckbox = ({
         </span>
       </label>
       <label
-        className="mt-px font-light text-gray-700 cursor-pointer select-none w-full text-xl"
+        className="mt-px text-gray-700 cursor-pointer select-none w-full text-xl"
         htmlFor={id}
       >
         {title}
@@ -158,7 +160,7 @@ export const RenderQuestion = ({
             )}
           </div>
           <SearchSelect
-            className="w-full text-xl"
+            className="w-full search-select"
             value={selectQuesTextAnswer}
             onChange={(e: any) => {
               const value = e;
@@ -194,7 +196,7 @@ export const RenderQuestion = ({
           </div>
           {isNumber ? (
             <TextInput
-              className="w-full text-xl"
+              className="w-full text-input"
               type={"number" as any}
               value={questionAnswerText}
               onChange={(e) => {

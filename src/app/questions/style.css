@@ -1,0 +1,7 @@
+.search-select > button > input {
+  @apply text-xl;
+}
+
+.text-input > input {
+  @apply text-xl;
+}

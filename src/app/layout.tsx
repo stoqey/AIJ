@@ -69,7 +69,7 @@ export const Layout = () => {
   return (
     <div className="h-full bg-gray-50 w-full">
       <Navbar user={null} />
-      <div className="p-3" style={{ paddingTop: "50px" }}>
+      <div className="p-3" style={{ paddingTop: "80px" }}>
         <Component state={state} />
       </div>
     </div>
