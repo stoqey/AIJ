@@ -1,7 +1,7 @@
 {
   "name": "aij",
   "productName": "AIJ",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "AI Jobs",
   "main": ".webpack/main",
   "homepage": "https://algojobs.ca",
@@ -9,10 +9,12 @@
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make --arch=x64 --platform",
+    "make:arm": "electron-forge make --arch=arm64 --platform",
     "publish": "electron-forge publish --arch=x64 --platform",
+    "publish:arm": "electron-forge publish --arch=arm64 --platform",
     "lint": "eslint --ext .ts,.tsx .",
     "darwin": "yarn package && yarn make darwin && npm run publish darwin",
-    "darwin:arm64": "yarn package && electron-forge make --arch=arm64 --platform darwin && electron-forge publish --arch=arm64 --platform darwin",
+    "darwin:arm": "yarn package && yarn make:arm darwin && npm run publish:arm darwin",
     "linux": "yarn package && yarn make linux && npm run publish linux",
     "win": "yarn package && yarn make win32 && npm run publish win32"
   },

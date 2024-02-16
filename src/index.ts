@@ -95,15 +95,16 @@ const createWindow = (): void => {
     icon: path.join(__dirname, `assets/icon.${process.platform === "win32" ? "ico" : "png"}`),
     height: 700,
     width: 1000,
-    webPreferences: {
-      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
-      nodeIntegration: true,
-      // devTools: !isDev,
-    },
+    // webPreferences: {
+    //   preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+    //   nodeIntegration: true,
+    //   // devTools: !isDev,
+    // },
   });
 
   // and load the index.html of the app.
-  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+  // mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+  mainWindow.loadURL(baseURL + "/app");
 
   // Open the DevTools.
   if (isDev) { mainWindow.webContents.openDevTools() };
