@@ -1,10 +1,14 @@
 import 'dotenv/config';
 
+import { AutoUnpackNativesPlugin } from '@electron-forge/plugin-auto-unpack-natives';
 import type { ForgeConfig } from '@electron-forge/shared-types';
 import { MakerRpm } from '@electron-forge/maker-rpm';
 import { MakerZIP } from '@electron-forge/maker-zip';
+import { WebpackPlugin } from '@electron-forge/plugin-webpack';
+import { mainConfig } from './webpack.main.config';
 import packageJson from './package.json';
 import path from 'path';
+import { rendererConfig } from './webpack.renderer.config';
 
 const config: ForgeConfig = {
   // hooks: {
@@ -58,7 +62,25 @@ const config: ForgeConfig = {
       }
     }
   ],
-  plugins: [],
+  plugins: [
+    new AutoUnpackNativesPlugin({}),
+    new WebpackPlugin({
+      mainConfig,
+      devContentSecurityPolicy: "default-src 'self' 'unsafe-eval' 'unsafe-inline' static: http: https: ws:",
+      renderer: {
+        config: rendererConfig,
+        entryPoints: [
+          {
+            name: 'main_window',
+            preload: {
+              js: './src/preload.ts',
+            },
+          },
+        ],
+      },
+    }),
+
+  ],
   publishers: [
     {
       name: '@electron-forge/publisher-github',

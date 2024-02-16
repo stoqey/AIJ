@@ -1,10 +1,47 @@
-import { Question, QuestionAnswer } from "../../app/questions/interfaces";
+export interface InputOption {
+    value: string;
+    label: string;
+}
+
+export interface Answer {
+    inputId: string;
+    inputType: string;
+    answerText: string;
+}
+
+export interface Question {
+    question: string;
+    inputId: string;
+    inputType: "input" | "text" | "radio" | "checkbox" | "select" | "textarea" | "fieldset";
+    inputOptions?: InputOption[];
+    inputTypeValue?: string;
+    answers?: Answer[];
+}
+
+
+export interface QuestionAnswer {
+    question: Question;
+    chainRes: {
+        text: string;
+        error?: boolean;
+        [key: string]: any;
+    }
+    isNew?: boolean;
+    date?: Date;
+}
+
+export type JobBoard = "indeed" | "linkedin" | "monster" | "glassdoor" | "careerbuilder" | "ziprecruiter" | "simplyhired";
 
 export interface AppJob {
     company: string,
     title: string,
     id: string,
-    easyApply: boolean
+    easyApply: boolean;
+
+    board?: JobBoard;
+
+    range?: string;
+    location?: string;
 };
 
 export interface Application {
