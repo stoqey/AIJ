@@ -1,5 +1,5 @@
 import { AppJob, BEState } from "./state.interfaces";
-import { Question, QuestionAnswer } from "../../app/questions/interfaces";
+import { Question, QuestionAnswer } from "./state.interfaces";
 import { compact, isEmpty, uniqBy } from "lodash";
 
 import fs from "fs";

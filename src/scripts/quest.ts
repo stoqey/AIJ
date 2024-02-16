@@ -1,4 +1,4 @@
-import { QuestionAnswer } from "../app/questions/interfaces";
+import { QuestionAnswer } from "../utils/state/state.interfaces";
 import fs from "fs";
 import { getReadableId } from "../utils/state";
 
