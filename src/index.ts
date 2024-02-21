@@ -259,16 +259,15 @@ ipcMain.handle('app:skip', async (event, app: Application) => {
 
 ipcMain.handle('app:complete', async (event, app: Application) => {
   if (!app) return;
-  const newState = await addApplied(app.job);
-  newState.skippedApps = (newState.skippedApps || []).filter((a) => a.job?.id !== app.job?.id);
-  if (!(newState.completedApps || []).includes(app)) {
-    newState.completedApps = [...(newState.completedApps || []), app];
-  }
-  await setState(newState);
-
   const jobId = _get(app, "job.id", "");
+  const newState = await addApplied(app.job);
+  const completedApps = newState.completedApps || [];
+  newState.skippedApps = (newState.skippedApps || []).filter((a) => a.job?.id !== app.job?.id);
+  if (!completedApps.some((a) => a.job?.id === jobId)) {
+    newState.completedApps = [...(completedApps), app];
+  };
+  await setState(newState);
   appEvents.emit(APPEVENTS.APP_STOP, jobId);
-
   return newState;
 });
 

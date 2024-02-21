@@ -1,11 +1,12 @@
 {
   "name": "aij",
   "productName": "AIJ",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "AI Jobs",
   "main": ".webpack/main",
   "homepage": "https://algojobs.ca",
   "scripts": {
+    "dev": "APP_DEV=true yarn start",
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make --arch=x64 --platform",
