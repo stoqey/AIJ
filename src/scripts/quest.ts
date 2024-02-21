@@ -16,8 +16,8 @@ const renameAllJsonFiles = () => {
                 const questionReadableId = getReadableId(questionJson?.question?.question);
                 const newQuestionFile = `${outputDir}/${questionReadableId}.json`;
                 fs.writeFileSync(newQuestionFile, questionDataString, { encoding: "utf-8" });
-                console.log("questionFile", questionFile);
-                console.log("newQuestionFile", newQuestionFile);
+                // console.log("questionFile", questionFile);
+                // console.log("newQuestionFile", newQuestionFile);
             }
 
         }
