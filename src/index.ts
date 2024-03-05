@@ -374,6 +374,13 @@ ipcMain.handle('logout', async (event, ogLink) => {
   return true;
 });
 
+ipcMain.handle('events', async (event, args) => {
+  const { name, data } = args || {};
+  if(!name || !data) return false;
+  appEvents.emit(name, data);
+  return true;
+});
+
 ipcMain.handle('my-invokable-ipc', async (event, ...args) => {
   const state = await getState();
   // const browser = await getBrowser();
