@@ -32,6 +32,7 @@ export const gotoMainPage = async (url: string) => {
 
         const browser = await getBrowser();
         const page = await browser.newPage();
+        await page.setViewport({ width: 1400, height: 800 });
 
         const ctx = {
             getState,
@@ -86,6 +87,7 @@ export const gotoAppPage = async (job: AppJob) => {
         const resume = await getResume();
         const browser = await getBrowser();
         const page = await browser.newPage();
+        await page.setViewport({ width: 1400, height: 800 });
 
         const close = () => {
             appEvents.emit(APPEVENTS.APP_STOP, job.id);

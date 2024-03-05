@@ -298,6 +298,11 @@ ipcMain.handle('state', async (event) => {
   return state;
 });
 
+ipcMain.handle('state:set', async (event, newState: BEState) => {
+  const state = await setState(newState);
+  return state;
+});
+
 ipcMain.handle('questions:read', async (event, question) => {
   // console.log("questions:read", question);
   const savedQuestion = await readQuestion(question as any);
