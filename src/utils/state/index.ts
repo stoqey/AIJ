@@ -35,6 +35,13 @@ export function getAppDataPath() {
     }
 }
 
+export const setIsDev = async (dev: boolean) => {
+    const state = await getState();
+    const newState = { ...state, dev };
+    await setState(newState);
+    return newState;
+};
+
 export const getState = async (): Promise<BEState> => {
     try {
         const statePath = getAppDataPath();

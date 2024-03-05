@@ -1,24 +1,26 @@
 // api with axios
 
+import axios, { AxiosInstance } from 'axios';
 import { getResume, getState, setState } from "../utils/state";
 
 import _get from "lodash/get";
-import axios from 'axios';
 import { isEmpty } from "lodash";
 
-export const isDev = process.env.APP_DEV ? (process.env.APP_DEV.trim() == "true") : false;
+export const getBaseUrl = (isDev: boolean) => {
+    return isDev ? "http://localhost:3001" : "https://www.algojobs.ca";
+};
 
-export const baseURL = isDev ? "http://localhost:3001" : "https://www.algojobs.ca";
-const api = axios.create({
-    baseURL,
-});
+export const getApiInstance = (isDev: boolean): AxiosInstance => {
+    const baseURL = getBaseUrl(isDev);
+    return axios.create({
+        baseURL,
+    });
+};
 
 interface IResponse {
     status: number;
     // data: any;
 };
-
-
 interface GetAuth {
     access_token: string;
     refresh_token: string;
@@ -33,6 +35,7 @@ interface GetAuthApiRes {
 
 export const getAuthApi = async (args: GetAuth): Promise<any> => {
     let state = await getState();
+    const api = getApiInstance(state.dev || false);
     try {
         const response = await api.post<GetAuthApiRes>('/api/auth', args);
         if (response.status !== 200) {
@@ -80,6 +83,7 @@ interface IMainResponse extends IResponse {
 export const getMainApi = async (): Promise<any> => {
     try {
         const state = await getState();
+        const api = getApiInstance(state.dev || false);
         const resume = await getResume();
         const access_token = _get(state, "auth.access_token");
         const refresh_token = _get(state, "auth.refresh_token");
@@ -122,6 +126,7 @@ export const getMainApi = async (): Promise<any> => {
 export const getAppApi = async (): Promise<any> => {
     try {
         const state = await getState();
+        const api = getApiInstance(state.dev || false);
         const resume = await getResume();
         const access_token = _get(state, "auth.access_token");
         const refresh_token = _get(state, "auth.refresh_token");
@@ -171,5 +176,3 @@ export const getAppApi = async (): Promise<any> => {
 // resume sections,
 
 // settings
-
-export default api;

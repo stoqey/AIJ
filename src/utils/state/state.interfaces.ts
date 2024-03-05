@@ -50,6 +50,7 @@ export interface Application {
 };
 
 export interface BEState {
+    dev: boolean;
     apps: Application[];
     completedApps: Application[];
     skippedApps: Application[];
@@ -57,6 +58,7 @@ export interface BEState {
     jobs: AppJob[];
     activeJob: AppJob;
     applied: AppJob[];
+    deletedJobs: AppJob[];
 
     questions: QuestionAnswer[];
 
